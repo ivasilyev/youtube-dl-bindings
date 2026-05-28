@@ -1,9 +1,10 @@
 import os
 import shutil
 
+from arch_based_data_provider import get_youtube_dl_kwargs, get_yt_dlp_kwargs, get_quickjs_kwargs
 from log import log
-from utils import download_latest_github_release, fetch_latest_tag_name, fetch_binary_with_retry, BINARY_DIR, \
-    extract_zip_recursively, find_files
+from utils import download_latest_github_release, fetch_latest_tag_name, fetch_binary_with_retry, BINARY_DIR
+from file_system_utils import extract_zip_recursively, find_files
 
 
 def download_ffmpeg():
@@ -44,15 +45,15 @@ def download_bun():
 
 def download():
     # youtube-dl
-    download_latest_github_release(repository="ytdl-org/youtube-dl", file="youtube-dl.exe")
+    download_latest_github_release(**get_youtube_dl_kwargs())
     # yt-dlp
-    download_latest_github_release(repository="yt-dlp/yt-dlp", file="yt-dlp.exe")
+    download_latest_github_release(**get_yt_dlp_kwargs())
     # FFmpeg
     download_ffmpeg()
     # deno
     download_deno()
     # quickjs
-    download_latest_github_release(repository="quickjs-ng/quickjs", file="qjs-windows-x86_64.exe")
+    download_latest_github_release(**get_quickjs_kwargs())
 
 
 if __name__ == '__main__':
