@@ -12,7 +12,7 @@ def get_yt_dlp_kwargs() -> dict:
     if is_windows_os():
         return dict(repository="yt-dlp/yt-dlp", file="yt-dlp.exe")
     else:
-        return
+        return dict(repository="yt-dlp/yt-dlp", file="yt-dlp")
 
 
 def get_quickjs_kwargs() -> dict:
