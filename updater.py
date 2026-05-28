@@ -2,7 +2,7 @@ import os
 import shutil
 
 from arch_based_data_provider import get_youtube_dl_kwargs, get_yt_dlp_kwargs, get_quickjs_kwargs, get_ffmpeg_args, \
-    get_deno_args
+    get_deno_args, get_bun_args
 from file_system_utils import extract_zip_recursively, find_files
 from log import log
 from utils import download_latest_github_release, fetch_latest_tag_name, fetch_binary_with_retry, BINARY_DIR
@@ -35,9 +35,8 @@ def download_deno():
 
 
 def download_bun():
-    folder = "bun-windows-x64-baseline-profile"
-    file = f"{folder}.zip"
-    download_latest_github_release(repository="oven-sh/bun", file=file)
+    repository, file = get_bun_args()
+    download_latest_github_release(repository=repository, file=file)
     archive = os.path.join(BINARY_DIR, file)
     extract_zip_recursively(zip_path=archive, extract_to=BINARY_DIR)
     os.remove(archive)

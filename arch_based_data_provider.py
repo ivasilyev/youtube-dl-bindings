@@ -34,3 +34,10 @@ def get_deno_args() -> tuple:
         return ("denoland/deno", "deno-x86_64-pc-windows-msvc.zip")
     else:
         return
+
+
+def get_bun_args() -> tuple:
+    if is_windows_os():
+        return ("oven-sh/bun", "bun-windows-x64-baseline-profile.zip")
+    else:
+        return
