@@ -5,7 +5,7 @@ def get_youtube_dl_kwargs() -> dict:
     if is_windows_os():
         return dict(repository="ytdl-org/youtube-dl", file="youtube-dl.exe")
     else:
-        return
+        return dict(repository="ytdl-org/youtube-dl", file="youtube-dl")
 
 
 def get_yt_dlp_kwargs() -> dict:
