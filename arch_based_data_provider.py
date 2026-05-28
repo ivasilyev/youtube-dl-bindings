@@ -33,7 +33,7 @@ def get_deno_args() -> tuple:
     if is_windows_os():
         return ("denoland/deno", "deno-x86_64-pc-windows-msvc.zip")
     else:
-        return
+        return ("denoland/deno", "deno-x86_64-unknown-linux-gnu.zip")
 
 
 def get_bun_args() -> tuple:
