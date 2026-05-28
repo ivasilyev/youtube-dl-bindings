@@ -1,10 +1,12 @@
 import os
 import subprocess
 import time
+import zipfile
+from collections import deque
 from typing import Any, Dict, Optional, List, Tuple
 
 import requests
-from jsonpath_ng import jsonpath, parse
+from jsonpath_ng import parse
 
 from log import log
 
@@ -93,9 +95,57 @@ def fetch_binary_with_retry(url: str, file: str, max_attempts: int = 5, delay: i
 
 
 def download_latest_github_release(repository: str, file: str):
+    log.info(f"Download {repository}")
     release_tag = fetch_latest_tag_name(repository)
     url = f"https://github.com/{repository}/releases/download/{release_tag}/{file}"
     fetch_binary_with_retry(url=url, file=os.path.join(BINARY_DIR, file))
+
+
+def extract_zip_recursively(zip_path: str, extract_to: str) -> None:
+    """
+    Extracts a ZIP archive into a directory, and recursively extracts
+    any nested ZIP files found inside.
+    """
+    # 1. Extract the main root ZIP archive
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
+
+    # 2. Use a loop to scan for newly extracted inner ZIP files
+    # os.walk is used to find nested files at any depth level
+    ziplist_found = True
+    while ziplist_found:
+        ziplist_found = False
+
+        for root, dirs, files in os.walk(extract_to):
+            for file in files:
+                if file.lower().endswith('.zip'):
+                    current_zip_path = os.path.join(root, file)
+
+                    # Create a specific folder name for the nested zip content
+                    # Example: "archive.zip" extracts into a folder named "archive/"
+                    folder_name = os.path.splitext(file)[0]
+                    nested_extract_to = os.path.join(root, folder_name)
+
+                    # Extract the nested ZIP file
+                    with zipfile.ZipFile(current_zip_path, 'r') as zip_ref:
+                        zip_ref.extractall(nested_extract_to)
+
+                    # Clean up and delete the internal ZIP file after unpacking it
+                    os.remove(current_zip_path)
+
+                    # Signal the loop to scan again since new ZIPs might have appeared
+                    ziplist_found = True
+                    break  # Break out to refresh os.walk with the new file structure
+            if ziplist_found:
+                break
+
+
+def find_files(directory: str) -> List[str]:
+    out: deque[str] = deque()
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            out.append(os.path.join(root, file))
+    return sorted(out)
 
 
 def run_external_program(command: List[str], timeout: int = 30) -> Tuple[str, str, int]:
