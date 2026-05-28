@@ -1,21 +1,20 @@
 import os
 import shutil
 
-from arch_based_data_provider import get_youtube_dl_kwargs, get_yt_dlp_kwargs, get_quickjs_kwargs
+from arch_based_data_provider import get_youtube_dl_kwargs, get_yt_dlp_kwargs, get_quickjs_kwargs, get_ffmpeg_args
 from log import log
 from utils import download_latest_github_release, fetch_latest_tag_name, fetch_binary_with_retry, BINARY_DIR
 from file_system_utils import extract_zip_recursively, find_files
 
 
 def download_ffmpeg():
-    repository = "BtbN/FFmpeg-Builds"
+    repository, template = get_ffmpeg_args()
     release_tag = fetch_latest_tag_name(repository)
-    folder = f"ffmpeg-master-{release_tag}-win64-gpl"
-    file = f"{folder}.zip"
+    file = template.format(release_tag=release_tag)
     url = f"https://github.com/{repository}/releases/download/{release_tag}/{file}"
     archive = os.path.join(BINARY_DIR, file)
     fetch_binary_with_retry(url=url, file=archive)
-    extract_to = os.path.join(BINARY_DIR, folder)
+    extract_to = os.path.join(BINARY_DIR, "ffmpeg")
     extract_zip_recursively(zip_path=archive, extract_to=extract_to)
     bin_dir = os.path.join(extract_to, "bin")
     for file in find_files(bin_dir):

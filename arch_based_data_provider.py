@@ -22,3 +22,8 @@ def get_quickjs_kwargs() -> dict:
         return
 
 
+def get_ffmpeg_args() -> tuple:
+    repo = "BtbN/FFmpeg-Builds"
+    if is_windows_os():
+        return (repo, "ffmpeg-master-{release_tag}-win64-gpl.zip")
+    return (repo, "ffmpeg-master-{release_tag}-linux64-gpl.tar.xz")
