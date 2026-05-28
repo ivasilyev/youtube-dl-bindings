@@ -23,7 +23,7 @@ class Log:
     def __init__(self):
         # _LOG = get_logger()
         self.logger = logging.getLogger()
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.INFO)
         formatter = logging.Formatter(LOGGING_FORMAT)
         stdout_handler = logging.StreamHandler(stdout)
         stdout_handler.setFormatter(formatter)

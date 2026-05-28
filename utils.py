@@ -15,6 +15,7 @@ def fetch_json_with_retry(url: str, max_attempts: int = 5, delay: int = 2) -> Op
     """
     Fetches a webpage as JSON with up to 5 attempts using a for loop.
     """
+    log.info(f"Fetch url: '{url}'")
     for attempt in range(1, max_attempts + 1):
         try:
             log.info(f"Fetch JSON for attempt {attempt} of {max_attempts}...")
@@ -66,6 +67,7 @@ def fetch_binary_with_retry(url: str, file: str, max_attempts: int = 5, delay: i
     Returns:
         The raw bytes of the file if successful, or None if all attempts fail.
     """
+    log.info(f"Fetch url: '{url}'")
     for attempt in range(1, max_attempts + 1):
         try:
             log.info(f"Fetch binary file for attempt {attempt} of {max_attempts}...")
