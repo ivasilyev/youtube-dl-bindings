@@ -40,4 +40,4 @@ def get_bun_args() -> tuple:
     if is_windows_os():
         return ("oven-sh/bun", "bun-windows-x64-baseline-profile.zip")
     else:
-        return
+        return ("oven-sh/bun", "bun-linux-x64-baseline-profile.zip")
