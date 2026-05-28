@@ -1,10 +1,11 @@
 import os
 import shutil
 
-from arch_based_data_provider import get_youtube_dl_kwargs, get_yt_dlp_kwargs, get_quickjs_kwargs, get_ffmpeg_args
+from arch_based_data_provider import get_youtube_dl_kwargs, get_yt_dlp_kwargs, get_quickjs_kwargs, get_ffmpeg_args, \
+    get_deno_args
+from file_system_utils import extract_zip_recursively, find_files
 from log import log
 from utils import download_latest_github_release, fetch_latest_tag_name, fetch_binary_with_retry, BINARY_DIR
-from file_system_utils import extract_zip_recursively, find_files
 
 
 def download_ffmpeg():
@@ -26,8 +27,8 @@ def download_ffmpeg():
 
 
 def download_deno():
-    file = "deno-x86_64-pc-windows-msvc.zip"
-    download_latest_github_release(repository="denoland/deno", file=file)
+    repository, file = get_deno_args()
+    download_latest_github_release(repository=repository, file=file)
     archive = os.path.join(BINARY_DIR, file)
     extract_zip_recursively(zip_path=archive, extract_to=BINARY_DIR)
     os.remove(archive)
