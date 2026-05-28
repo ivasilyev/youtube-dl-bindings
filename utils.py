@@ -1,8 +1,6 @@
 import os
 import subprocess
 import time
-import zipfile
-from collections import deque
 from typing import Any, Dict, Optional, List, Tuple
 
 import requests
@@ -19,7 +17,7 @@ def fetch_json_with_retry(url: str, max_attempts: int = 5, delay: int = 2) -> Op
     """
     for attempt in range(1, max_attempts + 1):
         try:
-            log.info(f"Attempt {attempt} of {max_attempts}...")
+            log.info(f"Fetch JSON for attempt {attempt} of {max_attempts}...")
             response = requests.get(url, timeout=10)
             response.raise_for_status()
 
@@ -27,9 +25,9 @@ def fetch_json_with_retry(url: str, max_attempts: int = 5, delay: int = 2) -> Op
             return response.json()
 
         except requests.exceptions.RequestException as e:
-            log.info(f"Attempt {attempt} failed: {e}")
+            log.debug(f"Attempt {attempt} failed: {e}")
         except ValueError:
-            log.info(f"Attempt {attempt} failed: Content is not valid JSON.")
+            log.debug(f"Attempt {attempt} failed: Content is not valid JSON.")
             # If the server returned non-JSON, retrying immediately might not help,
             # but we continue the loop in case it was a temporary server error page.
 
@@ -50,7 +48,9 @@ def get_dict_value_by_jsonpath(d: dict, jsonpath: str):
 def fetch_latest_tag_name(repository: str) -> str:
     url = f"https://api.github.com/repos/{repository}/releases"
     d: dict = fetch_json_with_retry(url)
-    return get_dict_value_by_jsonpath(d=d, jsonpath="$.[0].tag_name")
+    tag_name = get_dict_value_by_jsonpath(d=d, jsonpath="$.[0].tag_name")
+    log.info(f"The latest tag name for the repository '{repository}': '{tag_name}'")
+    return tag_name
 
 
 def fetch_binary_with_retry(url: str, file: str, max_attempts: int = 5, delay: int = 2) -> Optional[str]:
@@ -68,7 +68,7 @@ def fetch_binary_with_retry(url: str, file: str, max_attempts: int = 5, delay: i
     """
     for attempt in range(1, max_attempts + 1):
         try:
-            log.info(f"Attempt {attempt} of {max_attempts}...")
+            log.info(f"Fetch binary file for attempt {attempt} of {max_attempts}...")
 
             # Use stream=True to avoid loading large files into memory immediately
             response = requests.get(url, timeout=15, stream=True)
@@ -84,7 +84,7 @@ def fetch_binary_with_retry(url: str, file: str, max_attempts: int = 5, delay: i
                 return file
 
         except requests.exceptions.RequestException as e:
-            log.info(f"Attempt {attempt} failed: {e}")
+            log.debug(f"Attempt {attempt} failed: {e}")
 
         # Wait before retrying, except after the final attempt
         if attempt < max_attempts:
@@ -99,53 +99,6 @@ def download_latest_github_release(repository: str, file: str):
     release_tag = fetch_latest_tag_name(repository)
     url = f"https://github.com/{repository}/releases/download/{release_tag}/{file}"
     fetch_binary_with_retry(url=url, file=os.path.join(BINARY_DIR, file))
-
-
-def extract_zip_recursively(zip_path: str, extract_to: str) -> None:
-    """
-    Extracts a ZIP archive into a directory, and recursively extracts
-    any nested ZIP files found inside.
-    """
-    # 1. Extract the main root ZIP archive
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_to)
-
-    # 2. Use a loop to scan for newly extracted inner ZIP files
-    # os.walk is used to find nested files at any depth level
-    ziplist_found = True
-    while ziplist_found:
-        ziplist_found = False
-
-        for root, dirs, files in os.walk(extract_to):
-            for file in files:
-                if file.lower().endswith('.zip'):
-                    current_zip_path = os.path.join(root, file)
-
-                    # Create a specific folder name for the nested zip content
-                    # Example: "archive.zip" extracts into a folder named "archive/"
-                    folder_name = os.path.splitext(file)[0]
-                    nested_extract_to = os.path.join(root, folder_name)
-
-                    # Extract the nested ZIP file
-                    with zipfile.ZipFile(current_zip_path, 'r') as zip_ref:
-                        zip_ref.extractall(nested_extract_to)
-
-                    # Clean up and delete the internal ZIP file after unpacking it
-                    os.remove(current_zip_path)
-
-                    # Signal the loop to scan again since new ZIPs might have appeared
-                    ziplist_found = True
-                    break  # Break out to refresh os.walk with the new file structure
-            if ziplist_found:
-                break
-
-
-def find_files(directory: str) -> List[str]:
-    out: deque[str] = deque()
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            out.append(os.path.join(root, file))
-    return sorted(out)
 
 
 def run_external_program(command: List[str], timeout: int = 30) -> Tuple[str, str, int]:
