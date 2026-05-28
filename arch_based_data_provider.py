@@ -19,7 +19,7 @@ def get_quickjs_kwargs() -> dict:
     if is_windows_os():
         return dict(repository="quickjs-ng/quickjs", file="qjs-windows-x86_64.exe")
     else:
-        return
+        return dict(repository="quickjs-ng/quickjs", file="qjs-linux-x86_64")
 
 
 def get_ffmpeg_args() -> tuple:
