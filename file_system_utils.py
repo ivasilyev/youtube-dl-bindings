@@ -90,11 +90,56 @@ def extract_tar_gz_recursively(tar_path: str, extract_to: str) -> None:
                 break
 
 
+def extract_tar_xz_recursively(tar_path: str, extract_to: str) -> None:
+    """
+    Extracts a .tar.xz archive into a directory, and recursively extracts
+    any nested .tar.xz or .txz files found inside.
+    """
+    import tarfile
+    # 1. Extract the main root tar.xz archive ("r:xz" specifies XZ compression)
+
+    with tarfile.open(tar_path, "r:xz") as tar_ref:
+        tar_ref.extractall(path=extract_to, filter="data")
+
+    # 2. Use a loop to scan for newly extracted inner tar.xz files
+    tar_found = True
+    while tar_found:
+        tar_found = False
+        for root, dirs, files in os.walk(extract_to):
+            for file in files:
+                # Check for common extensions: .tar.xz or .txz
+                if file.lower().endswith(('.tar.xz', '.txz')):
+                    current_tar_path = os.path.join(root, file)
+
+                    # Create a specific folder name for the nested tar content
+                    if file.lower().endswith('.tar.xz'):
+                        folder_name = file[:-7]  # Strip .tar.xz
+                    else:
+                        folder_name = file[:-4]  # Strip .txz
+
+                    nested_extract_to = os.path.join(root, folder_name)
+
+                    # Extract the nested archive
+                    with tarfile.open(current_tar_path, "r:xz") as tar_ref:
+                        tar_ref.extractall(path=nested_extract_to, filter="data")
+
+                    # Clean up and delete the internal archive file after unpacking it
+                    os.remove(current_tar_path)
+
+                    # Signal the loop to scan again since new files might have appeared
+                    tar_found = True
+                    break  # Break out to refresh os.walk with the new file structure
+            if tar_found:
+                break
+
+
 def extract_archive(archive: str, directory: str):
     if archive.endswith(".zip"):
         return extract_zip_recursively(zip_path=archive, extract_to=directory)
     if archive.endswith(".tar.gz"):
         return extract_tar_gz_recursively(tar_path=archive, extract_to=directory)
+    if archive.endswith(".tar.xz"):
+        return extract_tar_xz_recursively(tar_path=archive, extract_to=directory)
     raise ValueError(f"Unknown archive type: '{archive}'")
 
 
