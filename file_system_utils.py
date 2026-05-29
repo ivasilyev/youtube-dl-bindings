@@ -218,23 +218,23 @@ def remove_recursively(target_path: str) -> bool:
         path = Path(target_path).resolve()
 
         if not path.exists():
-            print(f"Warning: Path '{path}' does not exist.")
+            log.info(f"Warning: Path '{path}' does not exist.")
             return False
 
         # If it's a directory, wipe it and all its contents recursively
         if path.is_dir():
             shutil.rmtree(path)
-            print(f"Successfully deleted directory tree: '{path}'")
+            log.info(f"Successfully deleted directory tree: '{path}'")
         # If it's a file or a symlink, delete it directly
         else:
             path.unlink()
-            print(f"Successfully deleted file: '{path}'")
+            log.info(f"Successfully deleted file: '{path}'")
 
         return True
 
     except PermissionError:
-        print(f"Error: Permission denied. Cannot delete '{target_path}'.")
+        log.info(f"Error: Permission denied. Cannot delete '{target_path}'.")
         return False
     except Exception as e:
-        print(f"An unexpected error occurred while deleting: {e}")
+        log.info(f"An unexpected error occurred while deleting: {e}")
         return False
