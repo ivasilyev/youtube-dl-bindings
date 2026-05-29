@@ -21,7 +21,7 @@ def download_ffmpeg():
     files = find_files(bin_dir)
     for file in files:
         basename = os.path.basename(file)
-        move_recursively(bin_dir, os.path.join(BINARY_DIR, basename))
+        move_recursively(file, os.path.join(BINARY_DIR, basename))
     log.info("Cleanup")
     remove_recursively(archive)
     remove_recursively(extract_to)
