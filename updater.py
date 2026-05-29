@@ -15,7 +15,7 @@ def download_ffmpeg():
     url = f"https://github.com/{repository}/releases/download/{release_tag}/{file}"
     archive = os.path.join(BINARY_DIR, file)
     fetch_binary_with_retry(url=url, file=archive)
-    extract_to = os.path.join(BINARY_DIR, "ffmpeg")
+    extract_to = os.path.join(BINARY_DIR, "ffmpeg-latest")
     extract_archive(archive=archive, directory=extract_to)
     bin_dir = os.path.join(extract_to, get_basename_without_all_extensions(archive), "bin")
     files = find_files(bin_dir)
@@ -31,7 +31,7 @@ def download_deno():
     repository, file = get_deno_args()
     download_latest_github_release(repository=repository, file=file)
     archive = os.path.join(BINARY_DIR, file)
-    extract_to = os.path.join(BINARY_DIR, "deno")
+    extract_to = os.path.join(BINARY_DIR, "deno-latest")
     extract_archive(archive=archive, directory=extract_to)
     log.info("Cleanup")
     remove_recursively(archive)
@@ -42,7 +42,7 @@ def download_bun():
     repository, file = get_bun_args()
     download_latest_github_release(repository=repository, file=file)
     archive = os.path.join(BINARY_DIR, file)
-    extract_to = os.path.join(BINARY_DIR, "bun")
+    extract_to = os.path.join(BINARY_DIR, "bun-latest")
     extract_archive(archive=archive, directory=extract_to)
     files = find_files(extract_to)
     for file in files:
