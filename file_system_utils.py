@@ -202,3 +202,39 @@ def move_recursively(source: str, destination: str) -> bool:
     except Exception as e:
         log.info(f"An unexpected error occurred during move: {e}")
         return False
+
+
+def remove_recursively(target_path: str) -> bool:
+    """
+    Removes a file or directory recursively.
+
+    Args:
+        target_path: The path to the file or directory to delete.
+
+    Returns:
+        True if the deletion was successful, False otherwise.
+    """
+    try:
+        path = Path(target_path).resolve()
+
+        if not path.exists():
+            print(f"Warning: Path '{path}' does not exist.")
+            return False
+
+        # If it's a directory, wipe it and all its contents recursively
+        if path.is_dir():
+            shutil.rmtree(path)
+            print(f"Successfully deleted directory tree: '{path}'")
+        # If it's a file or a symlink, delete it directly
+        else:
+            path.unlink()
+            print(f"Successfully deleted file: '{path}'")
+
+        return True
+
+    except PermissionError:
+        print(f"Error: Permission denied. Cannot delete '{target_path}'.")
+        return False
+    except Exception as e:
+        print(f"An unexpected error occurred while deleting: {e}")
+        return False

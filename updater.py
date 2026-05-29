@@ -1,11 +1,12 @@
 import os
 import shutil
 
-from arch_based_data_provider import get_youtube_dl_kwargs, get_yt_dlp_kwargs, get_quickjs_kwargs, get_ffmpeg_args, \
+from arch_based_data_provider import get_ffmpeg_args, \
     get_deno_args, get_bun_args
-from file_system_utils import extract_zip_recursively, find_files
+from file_system_utils import extract_zip_recursively, find_files, get_basename_without_all_extensions, \
+    move_recursively, remove_recursively
 from log import log
-from utils import download_latest_github_release, fetch_latest_tag_name, fetch_binary_with_retry, BINARY_DIR
+from utils import download_latest_github_release, fetch_latest_tag_name, BINARY_DIR
 
 
 def download_ffmpeg():
@@ -14,16 +15,17 @@ def download_ffmpeg():
     file = template.format(release_tag=release_tag)
     url = f"https://github.com/{repository}/releases/download/{release_tag}/{file}"
     archive = os.path.join(BINARY_DIR, file)
-    fetch_binary_with_retry(url=url, file=archive)
+    # fetch_binary_with_retry(url=url, file=archive)
     extract_to = os.path.join(BINARY_DIR, "ffmpeg")
     extract_zip_recursively(zip_path=archive, extract_to=extract_to)
-    bin_dir = os.path.join(extract_to, "bin")
-    for file in find_files(bin_dir):
+    bin_dir = os.path.join(extract_to, get_basename_without_all_extensions(archive), "bin")
+    files = find_files(bin_dir)
+    for file in files:
         basename = os.path.basename(file)
-        shutil.move(file, os.path.join(BINARY_DIR, basename))
+        move_recursively(file, os.path.join(BINARY_DIR, basename))
     log.info("Cleanup")
-    os.remove(archive)
-    shutil.rmtree(extract_to)
+    remove_recursively(archive)
+    remove_recursively(extract_to)
 
 
 def download_deno():
@@ -44,15 +46,15 @@ def download_bun():
 
 def download():
     # youtube-dl
-    download_latest_github_release(**get_youtube_dl_kwargs())
+    #download_latest_github_release(**get_youtube_dl_kwargs())
     # yt-dlp
-    download_latest_github_release(**get_yt_dlp_kwargs())
+    #download_latest_github_release(**get_yt_dlp_kwargs())
     # FFmpeg
     download_ffmpeg()
     # deno
-    download_deno()
+    #download_deno()
     # quickjs
-    download_latest_github_release(**get_quickjs_kwargs())
+    #download_latest_github_release(**get_quickjs_kwargs())
 
 
 if __name__ == '__main__':
