@@ -33,6 +33,10 @@ def download_deno():
     archive = os.path.join(BINARY_DIR, file)
     extract_to = os.path.join(BINARY_DIR, "deno-latest")
     extract_archive(archive=archive, directory=extract_to)
+    files = find_files(extract_to)
+    for file in files:
+        basename = os.path.basename(file)
+        move_recursively(file, os.path.join(BINARY_DIR, basename))
     log.info("Cleanup")
     remove_recursively(archive)
     remove_recursively(extract_to)
