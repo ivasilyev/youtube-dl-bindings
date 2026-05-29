@@ -1,4 +1,5 @@
 import os
+import shutil
 from collections import deque
 from pathlib import Path
 from typing import List
@@ -165,3 +166,39 @@ def get_basename_without_all_extensions(file_path: str) -> str:
         filename = Path(filename).stem
 
     return filename
+
+
+def move_recursively(source: str, destination: str) -> bool:
+    """
+    Moves a file or directory recursively to a new location.
+
+    Args:
+        source: Path to the source file or directory.
+        destination: Path to the destination file or directory.
+
+    Returns:
+        True if the operation succeeded, False otherwise.
+    """
+    try:
+        # Resolve paths to ensure they are absolute and clean
+        src_path = Path(source).resolve()
+        dest_path = Path(destination).resolve()
+
+        if not src_path.exists():
+            log.info(f"Error: Source path '{src_path}' does not exist.")
+            return False
+
+        # Create parent directories for the destination if they do not exist
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Execute the recursive move operation
+        shutil.move(str(src_path), str(dest_path))
+        log.info(f"Successfully moved '{src_path}' to '{dest_path}'.")
+        return True
+
+    except PermissionError:
+        log.info(f"Error: Permission denied when accessing paths.")
+        return False
+    except Exception as e:
+        log.info(f"An unexpected error occurred during move: {e}")
+        return False
