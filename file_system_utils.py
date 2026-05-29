@@ -1,5 +1,6 @@
 import os
 from collections import deque
+from pathlib import Path
 from typing import List
 
 from log import log
@@ -149,3 +150,18 @@ def find_files(directory: str) -> List[str]:
         for file in files:
             out.append(os.path.join(root, file))
     return sorted(out)
+
+
+def get_basename_without_all_extensions(file_path: str) -> str:
+    """
+    Strips all extensions from a path (e.g., 'archive.tar.gz' -> 'archive').
+    """
+    path = Path(file_path)
+    # Extract just the filename to ignore any dots in the directory path
+    filename = path.name
+
+    # Keep stripping extensions until none are left
+    while '.' in filename:
+        filename = Path(filename).stem
+
+    return filename
