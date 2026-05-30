@@ -1,8 +1,18 @@
 import os
 import subprocess
-from typing import List, Tuple
+
+from pydantic import BaseModel
 
 from log import log
+
+
+class ProgramExecutionDto(BaseModel):
+    """
+    A simplified replacement for subprocess.CompletedProcess
+    """
+    stdout: str
+    stderr: str
+    success: bool
 
 
 def is_windows_os() -> bool:
@@ -10,7 +20,7 @@ def is_windows_os() -> bool:
     return os.name == "nt"
 
 
-def run_external_program(command: str, timeout: int = None) -> Tuple[str, str, int]:
+def run_external_program(command: str, timeout: int = None) -> ProgramExecutionDto:
     """
     Executes an external program and returns its stdout, stderr, and exit code.
 
@@ -24,7 +34,7 @@ def run_external_program(command: str, timeout: int = None) -> Tuple[str, str, i
     """
     try:
         # Run the command securely using a list of arguments (avoids shell=True)
-        result = subprocess.run(
+        result: subprocess.CompletedProcess = subprocess.run(
             command,
             capture_output=True,  # Captures both stdout and stderr
             text=True,  # Automatically decodes bytes to string (UTF-8)
@@ -32,26 +42,25 @@ def run_external_program(command: str, timeout: int = None) -> Tuple[str, str, i
             timeout=timeout,  # Prevents the script from hanging indefinitely,
             shell=True,
         )
-
-        return result.stdout, result.stderr, result.returncode
+        return ProgramExecutionDto(stdout=result.stdout, stderr=result.stderr, success=result.returncode == 0)
 
     except subprocess.TimeoutExpired as e:
         log.info(f"Error: The command timed out after {timeout} seconds.")
         # Return what was captured before the timeout occurred
         stdout = e.stdout.decode('utf-8') if isinstance(e.stdout, bytes) else (e.stdout or "")
         stderr = e.stderr.decode('utf-8') if isinstance(e.stderr, bytes) else (e.stderr or "")
-        return stdout, stderr, -1
+        return ProgramExecutionDto(stdout=stdout, stderr=stderr, success=False)
 
     except FileNotFoundError:
-        log.info(f"Error: The executable '{command[0]}' was not found.")
-        return "", f"Executable '{command[0]}' not found.", -1
+        log.info(f"Error: The executable was not found.")
+        return ProgramExecutionDto(stdout="", stderr="Executable not found.", success=False)
 
 
 # tests
 
 
 def run_external_program_test():
-    print(run_external_program('echo "aaaa bbb ccc"'))
+    log.info(run_external_program('echo "aaaa bbb ccc"').stdout)
 
 
 if __name__ == '__main__':
