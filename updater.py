@@ -58,7 +58,7 @@ def download_bun():
     remove_recursively(extract_to)
 
 
-def download():
+def update():
     # youtube-dl
     download_latest_github_release(**get_youtube_dl_kwargs())
     # yt-dlp
@@ -74,4 +74,4 @@ def download():
 
 
 if __name__ == '__main__':
-    download()
+    update()

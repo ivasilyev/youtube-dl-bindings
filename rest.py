@@ -7,6 +7,7 @@ from config import ConfigurationManager
 from playlist_downloader import playlist_download
 from single_downloader import single_download
 from system_utils import ProgramExecutionDto
+from updater import update
 
 
 class RestResponseDto(BaseModel):
@@ -75,6 +76,7 @@ set_string_model = api.model('SetStringRequest', {
 # Endpoints for fetch_max_attempts
 # =========================================================================
 
+
 @ns.route('/config/get-fetch-max-attempts')
 class GetFetchMaxAttempts(Resource):
     @api.doc(description='Getter for fetch_max_attempts. Returns a raw integer.')
@@ -98,6 +100,7 @@ class SetFetchMaxAttempts(Resource):
 # =========================================================================
 # Endpoints for fetch_max_delay_seconds
 # =========================================================================
+
 
 @ns.route('/config/get-fetch-max-delay-seconds')
 class GetFetchMaxDelaySeconds(Resource):
@@ -123,6 +126,7 @@ class SetFetchMaxDelaySeconds(Resource):
 # Endpoints for single_download_template
 # =========================================================================
 
+
 @ns.route('/config/get-single-download-template')
 class GetSingleDownloadTemplate(Resource):
     @api.doc(description='Getter for single_download_template. Returns a raw string.')
@@ -147,6 +151,7 @@ class SetSingleDownloadTemplate(Resource):
 # Endpoints for playlist_download_template
 # =========================================================================
 
+
 @ns.route('/config/get-playlist-download-template')
 class GetPlaylistDownloadTemplate(Resource):
     @api.doc(description='Getter for playlist_download_template. Returns a raw string.')
@@ -168,8 +173,24 @@ class SetPlaylistDownloadTemplate(Resource):
 
 
 # =========================================================================
+# Endpoints for updater
+# =========================================================================
+
+
+@ns.route('/update')
+class UpdateEndpoint(Resource):
+    @api.marshal_with(rest_response_model, code=200)
+    @api.doc(description='Update')
+    def get(self):
+        _ = update()
+        dto: RestResponseDto = RestResponseDto(data=dict())
+        return dto.model_dump(), 200
+
+
+# =========================================================================
 # Endpoints for single_downloader
 # =========================================================================
+
 
 download_model = api.model('DownloadRequest', {
     'url': fields.String(required=True, description='URL', min_length=1),
@@ -205,7 +226,6 @@ class PlaylistDownloadEndpoint(Resource):
         execution_dto: ProgramExecutionDto = playlist_download(playlist_url=url, directory=directory)
         response_dto: RestResponseDto = RestResponseDto(data=execution_dto.model_dump())
         return response_dto.model_dump(), 200
-
 
 
 def run():
