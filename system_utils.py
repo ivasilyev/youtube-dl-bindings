@@ -6,6 +6,7 @@ from typing import List
 
 from pydantic import BaseModel
 
+from constants import BINARY_DIR
 from log import log
 
 
@@ -45,18 +46,18 @@ def run_external_program(command: str, timeout: int = None) -> ProgramExecutionD
     Returns:
         A tuple containing (stdout_string, stderr_string, return_code)
     """
-    cmd = sanitize_command(command)
     log.debug("Run command: `" + command + "`")
 
     try:
         # Run the command securely using a list of arguments (avoids shell=True)
         result: subprocess.CompletedProcess = subprocess.run(
-            cmd,
+            command,
             capture_output=True,  # Captures both stdout and stderr
             text=True,  # Automatically decodes bytes to string (UTF-8)
             check=False,  # Prevents throwing an error on non-zero exit codes
             timeout=timeout,  # Prevents the script from hanging indefinitely,
             shell=True,
+            cwd=BINARY_DIR,
         )
         return ProgramExecutionDto(stdout=result.stdout, stderr=result.stderr, success=result.returncode == 0)
 

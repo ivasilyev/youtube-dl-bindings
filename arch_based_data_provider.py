@@ -48,6 +48,6 @@ def get_bun_args() -> tuple:
 
 def get_yt_dlp_bin() -> str:
     if is_windows_os():
-        return os.path.join(BINARY_DIR, "yt-dlp.exe")
+        return "yt-dlp.exe"
     else:
-        return os.path.join(BINARY_DIR, "yt-dlp")
+        return "yt-dlp"
