@@ -4,6 +4,7 @@ from flask_restx import Api, Resource, fields
 from pydantic import BaseModel
 
 from config import ConfigurationManager
+from playlist_downloader import playlist_download
 from single_downloader import single_download
 
 
@@ -175,7 +176,7 @@ download_model = api.model('DownloadRequest', {
 })
 
 @ns.route('/api/single-download')
-class SetPlaylistDownloadTemplate(Resource):
+class SingleDownloadEndpoint(Resource):
     @api.expect(download_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
     @api.doc(description='Single download')
@@ -183,6 +184,24 @@ class SetPlaylistDownloadTemplate(Resource):
         url = request.json.get('url')
         directory = request.json.get('directory')
         _ = single_download(url=url, directory=directory)
+        dto: RestResponseDto = RestResponseDto(data=dict())
+        return dto.model_dump(), 200
+
+
+# =========================================================================
+# Endpoints for playlist_downloader
+# =========================================================================
+
+
+@ns.route('/api/playlist-download')
+class PlaylistDownloadEndpoint(Resource):
+    @api.expect(download_model, validate=True)
+    @api.marshal_with(rest_response_model, code=200)
+    @api.doc(description='Playlist download')
+    def post(self):
+        url = request.json.get('url')
+        directory = request.json.get('directory')
+        _ = playlist_download(playlist_url=url, directory=directory)
         dto: RestResponseDto = RestResponseDto(data=dict())
         return dto.model_dump(), 200
 
