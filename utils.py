@@ -6,10 +6,9 @@ from typing import Any, Dict, Optional, List, Tuple
 import requests
 from jsonpath_ng import parse
 
-from config import ConfigurationManager
+from config import ConfigurationManager, BINARY_DIR
 from log import log
 
-BINARY_DIR = os.path.join(os.getcwd(), "bin")
 _config = ConfigurationManager()
 
 

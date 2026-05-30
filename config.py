@@ -1,4 +1,5 @@
 import json
+import os
 import threading
 from pathlib import Path
 from pydantic import BaseModel, Field, ValidationError
@@ -132,3 +133,6 @@ class ConfigurationManager:
                 self.__save_to_disk()
             except ValidationError as e:
                 raise ValueError(f"Invalid yt_dlp_command_template constraint: {e}")
+
+
+BINARY_DIR = os.path.join(os.getcwd(), "bin")
