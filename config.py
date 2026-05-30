@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field, ValidationError
 from system_utils import is_windows_os
 
 BINARY_DIR = os.path.join(os.getcwd(), "bin")
+CONFIG_FILE = os.path.join(os.getcwd(), "config.json")
 
 
 def get_default_yt_dlp_cmd() -> str:
@@ -39,7 +40,7 @@ class ConfigDTO(BaseModel):
 class ConfigurationManager:
     _instance = None
     _lock = threading.Lock()
-    _file_path = Path("config.json")
+    _file_path = Path(CONFIG_FILE)
 
     def __new__(cls):
         # Thread-safe Double-Checked Locking Singleton
