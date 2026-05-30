@@ -24,7 +24,7 @@ def is_windows_os() -> bool:
 
 
 def sanitize_command(command: str) -> str:
-    commands: List[str] = re.split("[\n\r]+", command)
+    commands: List[str] = re.split("[\n\r]+", command.strip())
     queue: deque[str] = deque()
     for s in commands:
         s1 = re.sub("\\$", "", s)

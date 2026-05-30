@@ -17,12 +17,12 @@ class ConfigDTO(BaseModel):
     fetch_max_attempts: int = Field(
         default=10,
         gt=0,
-        description="Maximum number of retry attempts for network operations"
+        description="Maximum number of fetch attempts"
     )
     fetch_max_delay_seconds: int = Field(
         default=10,
         gt=0,
-        description="Maximum delay in seconds between retries"
+        description="Maximum delay in seconds between attempts"
     )
     single_download_template: str = Field(
         default=get_default_single_download_cmd(),
@@ -55,11 +55,11 @@ class ConfigurationManager:
         self.__fetch_max_delay_seconds: Union[int, None] = None
         self.__single_download_template: Union[str, None] = None
         self.__playlist_download_template: Union[str, None] = None
+        self.__load_from_disk()
 
     def __init_singleton(self):
         """Internal initialization executed exactly once for the singleton instance."""
         self.__lock = threading.Lock()  # Instance-level lock for thread-safe field updates
-        self.__load_from_disk()
 
     def __load_from_disk(self):
         """Reads config from disk and utilizes the DTO definitions for missing keys/defaults."""
@@ -79,8 +79,8 @@ class ConfigurationManager:
             # Populate Java-like pseudo-private fields
             self.__fetch_max_attempts = validated_config.fetch_max_attempts
             self.__fetch_max_delay_seconds = validated_config.fetch_max_delay_seconds
-            self.__single_download_template = validated_config.single_download_template
-            self.__playlist_download_template = validated_config.playlist_download_template
+            self.__single_download_template = sanitize_command(validated_config.single_download_template)
+            self.__playlist_download_template = sanitize_command(validated_config.playlist_download_template)
 
             # Immediately generate or repair the file if it didn't exist or was missing fields
             if not self._file_path.exists() or not raw_data:

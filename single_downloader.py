@@ -1,6 +1,6 @@
 from config import ConfigurationManager
 from log import log
-from system_utils import sanitize_command, run_external_program
+from system_utils import run_external_program
 from utils import render_template
 
 _cfg = ConfigurationManager()
