@@ -6,7 +6,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from constants import BINARY_DIR
+from constants import BINARY_DIR, ENCODING_UTF8
 from log import log
 
 
@@ -17,6 +17,13 @@ class ProgramExecutionDto(BaseModel):
     stdout: str
     stderr: str
     success: bool
+
+    def __str__(self):
+        return f"""
+STDOUT: {self.stdout}        
+STDERR: {self.stderr}        
+success: {self.success}        
+        """.strip()
 
 
 def is_windows_os() -> bool:
@@ -59,13 +66,19 @@ def run_external_program(command: str, timeout: int = None) -> ProgramExecutionD
             shell=True,
             cwd=BINARY_DIR,
         )
-        return ProgramExecutionDto(stdout=result.stdout, stderr=result.stderr, success=result.returncode == 0)
+        dto: ProgramExecutionDto = ProgramExecutionDto(
+            stdout=result.stdout,
+            stderr=result.stderr,
+            success=result.returncode == 0,
+        )
+        log.debug(dto)
+        return dto
 
     except subprocess.TimeoutExpired as e:
         log.info(f"Error: The command timed out after {timeout} seconds.")
         # Return what was captured before the timeout occurred
-        stdout = e.stdout.decode('utf-8') if isinstance(e.stdout, bytes) else (e.stdout or "")
-        stderr = e.stderr.decode('utf-8') if isinstance(e.stderr, bytes) else (e.stderr or "")
+        stdout = e.stdout.decode(ENCODING_UTF8) if isinstance(e.stdout, bytes) else (e.stdout or "")
+        stderr = e.stderr.decode(ENCODING_UTF8) if isinstance(e.stderr, bytes) else (e.stderr or "")
         return ProgramExecutionDto(stdout=stdout, stderr=stderr, success=False)
 
     except FileNotFoundError:
