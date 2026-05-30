@@ -6,7 +6,8 @@ from typing import Any, Dict, Optional, List, Tuple
 import requests
 from jsonpath_ng import parse
 
-from config import ConfigurationManager, BINARY_DIR
+from config import ConfigurationManager
+from constants import BINARY_DIR
 from log import log
 
 _config = ConfigurationManager()

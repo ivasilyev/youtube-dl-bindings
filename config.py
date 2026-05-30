@@ -1,14 +1,11 @@
 import json
-import os
 import threading
 from pathlib import Path
 
 from pydantic import BaseModel, Field, ValidationError
 
+from constants import CONFIG_FILE
 from system_utils import is_windows_os
-
-BINARY_DIR = os.path.join(os.getcwd(), "bin")
-CONFIG_FILE = os.path.join(os.getcwd(), "config.json")
 
 
 def get_default_yt_dlp_cmd() -> str:

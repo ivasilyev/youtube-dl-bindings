@@ -2,7 +2,7 @@ import os
 
 from arch_based_data_provider import get_ffmpeg_args, \
     get_deno_args, get_bun_args, get_quickjs_kwargs, get_youtube_dl_kwargs, get_yt_dlp_kwargs
-from config import BINARY_DIR
+from constants import BINARY_DIR
 from file_system_utils import extract_archive, find_files, get_basename_without_all_extensions, \
     move_recursively, remove_recursively
 from log import log
