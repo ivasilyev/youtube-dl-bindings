@@ -33,10 +33,14 @@ DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE = """
     --preset-alias=mkv \
     --merge-output-format=mkv \
     --remux-video=mkv \
-    --output={{ directory }}/%(title)s__%(id)s.%(ext)s \
+    --js-runtimes=deno:. \
+    --ffmpeg-location=. \
+    --output={{ directory }}/'%(title)s__%(id)s.%(ext)s' \
     --verbose \
     {{ url }}
 """
+# --proxy=socks5://127.0.0.1:1080
+# --cookies-from-browser firefox:~/snap/firefox/common/.mozilla/firefox/
 
 DEFAULT_PLAYLIST_DOWNLOAD_CMD_TEMPLATE = """
 {{ bin }} \
