@@ -1,3 +1,4 @@
+from constants import DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE, DEFAULT_PLAYLIST_DOWNLOAD_CMD_TEMPLATE
 from system_utils import is_windows_os
 
 
@@ -41,3 +42,17 @@ def get_bun_args() -> tuple:
         return ("oven-sh/bun", "bun-windows-x64-baseline-profile.zip")
     else:
         return ("oven-sh/bun", "bun-linux-x64-baseline-profile.zip")
+
+
+def get_default_single_download_cmd() -> str:
+    if is_windows_os():
+        return DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE.replace("{{ bin }}", "yt-dlp.exe")
+    else:
+        return DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE.replace("{{ bin }}", "yt-dlp")
+
+
+def get_default_playlist_download_cmd() -> str:
+    if is_windows_os():
+        return DEFAULT_PLAYLIST_DOWNLOAD_CMD_TEMPLATE.replace("{{ bin }}", "yt-dlp.exe")
+    else:
+        return DEFAULT_PLAYLIST_DOWNLOAD_CMD_TEMPLATE.replace("{{ bin }}", "yt-dlp")
