@@ -1,18 +1,12 @@
 import json
 import threading
 from pathlib import Path
+from typing import Union
 
 from pydantic import BaseModel, Field, ValidationError
 
-from constants import CONFIG_FILE, DEFAULT_YT_DLP_CMD_TEMPLATE
-from system_utils import is_windows_os
-
-
-def get_default_yt_dlp_cmd() -> str:
-    if is_windows_os():
-        return DEFAULT_YT_DLP_CMD_TEMPLATE.replace("{{ bin }}", "yt-dlp.exe")
-    else:
-        return DEFAULT_YT_DLP_CMD_TEMPLATE.replace("{{ bin }}", "yt-dlp")
+from arch_based_data_provider import get_default_single_download_cmd, get_default_playlist_download_cmd
+from constants import CONFIG_FILE
 
 
 # 1. The DTO containing your exact default values and validation guardrails
@@ -27,10 +21,15 @@ class ConfigDTO(BaseModel):
         gt=0,
         description="Maximum delay in seconds between retries"
     )
-    yt_dlp_command_template: str = Field(
-        default=get_default_yt_dlp_cmd(),
+    single_download_template: str = Field(
+        default=get_default_single_download_cmd(),
         min_length=1,
-        description="Command template string for executing yt-dlp"
+        description="Single download command template"
+    )
+    playlist_download_template: str = Field(
+        default=get_default_playlist_download_cmd(),
+        min_length=1,
+        description="Playlist download command template"
     )
 
 
@@ -47,6 +46,12 @@ class ConfigurationManager:
                     cls._instance = super().__new__(cls)
                     cls._instance.__init_singleton()
         return cls._instance
+
+    def __init__(self):
+        self.__fetch_max_attempts: Union[int, None] = None
+        self.__fetch_max_delay_seconds: Union[int, None] = None
+        self.__single_download_template: Union[str, None] = None
+        self.__playlist_download_template: Union[str, None] = None
 
     def __init_singleton(self):
         """Internal initialization executed exactly once for the singleton instance."""
@@ -71,7 +76,8 @@ class ConfigurationManager:
             # Populate Java-like pseudo-private fields
             self.__fetch_max_attempts = validated_config.fetch_max_attempts
             self.__fetch_max_delay_seconds = validated_config.fetch_max_delay_seconds
-            self.__yt_dlp_command_template = validated_config.yt_dlp_command_template
+            self.__single_download_template = validated_config.single_download_template
+            self.__playlist_download_template = validated_config.playlist_download_template
 
             # Immediately generate or repair the file if it didn't exist or was missing fields
             if not self._file_path.exists() or not raw_data:
@@ -86,7 +92,8 @@ class ConfigurationManager:
         current_data = ConfigDTO(
             fetch_max_attempts=self.__fetch_max_attempts,
             fetch_max_delay_seconds=self.__fetch_max_delay_seconds,
-            yt_dlp_command_template=self.__yt_dlp_command_template
+            single_download_template=self.__single_download_template,
+            playlist_download_template=self.__playlist_download_template,
         )
         with open(self._file_path, "w", encoding="utf-8") as f:
             json.dump(current_data.model_dump(), f, indent=4)
@@ -103,7 +110,8 @@ class ConfigurationManager:
                 ConfigDTO(
                     fetch_max_attempts=value,
                     fetch_max_delay_seconds=self.__fetch_max_delay_seconds,
-                    yt_dlp_command_template=self.__yt_dlp_command_template
+                    single_download_template=self.__single_download_template,
+                    playlist_download_template=self.__playlist_download_template,
                 )
                 self.__fetch_max_attempts = value
                 self.__save_to_disk()
@@ -120,29 +128,49 @@ class ConfigurationManager:
                 ConfigDTO(
                     fetch_max_attempts=self.__fetch_max_attempts,
                     fetch_max_delay_seconds=value,
-                    yt_dlp_command_template=self.__yt_dlp_command_template
+                    single_download_template=self.__single_download_template,
+                    playlist_download_template=self.__playlist_download_template,
                 )
                 self.__fetch_max_delay_seconds = value
                 self.__save_to_disk()
             except ValidationError as e:
                 raise ValueError(f"Invalid fetch_max_delay_seconds constraint: {e}")
 
-    def get_yt_dlp_command_template(self) -> str:
+    def get_single_download_template(self) -> str:
         with self.__lock:
-            return self.__yt_dlp_command_template
+            return self.__single_download_template
 
-    def set_yt_dlp_command_template(self, value: str) -> None:
+    def set_single_download_template(self, value: str) -> None:
         with self.__lock:
             try:
                 ConfigDTO(
                     fetch_max_attempts=self.__fetch_max_attempts,
                     fetch_max_delay_seconds=self.__fetch_max_delay_seconds,
-                    yt_dlp_command_template=value
+                    single_download_template=value,
+                    playlist_download_template=self.__playlist_download_template,
                 )
-                self.__yt_dlp_command_template = value
+                self.__single_download_template = value
                 self.__save_to_disk()
             except ValidationError as e:
-                raise ValueError(f"Invalid yt_dlp_command_template constraint: {e}")
+                raise ValueError(f"Invalid single_download_template constraint: {e}")
+
+    def get_playlist_download_template(self) -> str:
+        with self.__lock:
+            return self.__single_download_template
+
+    def set_playlist_download_template(self, value: str) -> None:
+        with self.__lock:
+            try:
+                ConfigDTO(
+                    fetch_max_attempts=self.__fetch_max_attempts,
+                    fetch_max_delay_seconds=self.__fetch_max_delay_seconds,
+                    single_download_template=self.__single_download_template,
+                    playlist_download_template=value,
+                )
+                self.__playlist_download_template = value
+                self.__save_to_disk()
+            except ValidationError as e:
+                raise ValueError(f"Invalid single_download_template constraint: {e}")
 
 
 # tests

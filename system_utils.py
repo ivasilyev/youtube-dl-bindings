@@ -46,6 +46,7 @@ def run_external_program(command: str, timeout: int = None) -> ProgramExecutionD
         A tuple containing (stdout_string, stderr_string, return_code)
     """
     cmd = sanitize_command(command)
+    log.debug("Run command: `" + command + "`")
 
     try:
         # Run the command securely using a list of arguments (avoids shell=True)
