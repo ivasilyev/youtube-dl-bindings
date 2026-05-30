@@ -3,6 +3,7 @@ import time
 from typing import Any, Dict, Optional
 
 import requests
+from jinja2 import Template
 from jsonpath_ng import parse
 
 from config import ConfigurationManager
@@ -147,6 +148,12 @@ def download_latest_github_release_test():
     file = "youtube-dl.exe"
     #
     download_latest_github_release(repository=repository, file=file)
+
+
+def render_jinja2_template(template_string: str, values_dict: dict) -> str:
+    template = Template(template_string)
+    result = template.render(**values_dict)
+    return result
 
 
 if __name__ == '__main__':
