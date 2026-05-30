@@ -2,7 +2,19 @@ import json
 import os
 import threading
 from pathlib import Path
+
 from pydantic import BaseModel, Field, ValidationError
+
+from system_utils import is_windows_os
+
+BINARY_DIR = os.path.join(os.getcwd(), "bin")
+
+
+def get_default_yt_dlp_cmd() -> str:
+    if is_windows_os():
+        return 'yt-dlp.exe "{{ url }}" "{{ directory }}"'
+    else:
+        return 'yt-dlp "{{ url }}" "{{ directory }}"'
 
 
 # 1. The DTO containing your exact default values and validation guardrails
@@ -18,7 +30,7 @@ class ConfigDTO(BaseModel):
         description="Maximum delay in seconds between retries"
     )
     yt_dlp_command_template: str = Field(
-        default='yt-dlp "{{ url }}" "{{ directory }}"',
+        default=get_default_yt_dlp_cmd(),
         min_length=1,
         description="Command template string for executing yt-dlp"
     )
@@ -133,6 +145,3 @@ class ConfigurationManager:
                 self.__save_to_disk()
             except ValidationError as e:
                 raise ValueError(f"Invalid yt_dlp_command_template constraint: {e}")
-
-
-BINARY_DIR = os.path.join(os.getcwd(), "bin")
