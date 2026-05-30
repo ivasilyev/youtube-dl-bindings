@@ -8,7 +8,7 @@ CONFIG_FILE = os.path.join(ROOT_DIR, "config.json")
 
 # Default values
 DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE = """
-"{{ bin }} \
+{{ bin }} \
     --abort-on-unavailable-fragment \
     --mtime \
     --embed-chapters \
