@@ -1,3 +1,5 @@
+flask
+flask-restx
 jinja2
 jsonpath-ng
 pydantic
