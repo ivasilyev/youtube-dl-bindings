@@ -1,5 +1,7 @@
 import os
 
+ENCODING_UTF8 = "utf-8"
+
 ROOT_DIR = os.getcwd()
 BINARY_DIR = os.path.join(ROOT_DIR, "bin")
 CONFIG_FILE = os.path.join(ROOT_DIR, "config.json")
