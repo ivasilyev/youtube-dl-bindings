@@ -150,7 +150,7 @@ def download_latest_github_release_test():
     download_latest_github_release(repository=repository, file=file)
 
 
-def render_jinja2_template(template_string: str, values_dict: dict) -> str:
+def render_template(template_string: str, values_dict: dict) -> str:
     template = Template(template_string)
     result = template.render(**values_dict)
     return result

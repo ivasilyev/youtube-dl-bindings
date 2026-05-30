@@ -28,7 +28,8 @@ def sanitize_command(command: str) -> str:
     queue: deque[str] = deque()
     for s in commands:
         s1 = re.sub("\\$", "", s)
-        queue.append(s1)
+        s2 = re.sub("[ ]+", " ", s1)
+        queue.append(s2)
     return " ".join(queue)
 
 

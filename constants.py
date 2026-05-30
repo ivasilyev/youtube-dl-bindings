@@ -16,7 +16,6 @@ DEFAULT_YT_DLP_CMD_TEMPLATE = """
     --sleep-interval=15 \
     --sleep-requests=3 \
     --sleep-subtitles=3 \
-    --cookies-from-browser=${cookiesBrowser} \
     --match-filter=!is_live \
     --no-skip-unavailable-fragments \
     --no-abort-on-unavailable-fragments \
