@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from config import ConfigurationManager
 from playlist_downloader import playlist_download
 from single_downloader import single_download
+from system_utils import ProgramExecutionDto
 
 
 class RestResponseDto(BaseModel):
@@ -74,7 +75,7 @@ set_string_model = api.model('SetStringRequest', {
 # Endpoints for fetch_max_attempts
 # =========================================================================
 
-@ns.route('/api/get-fetch-max-attempts')
+@ns.route('/config/get-fetch-max-attempts')
 class GetFetchMaxAttempts(Resource):
     @api.doc(description='Getter for fetch_max_attempts. Returns a raw integer.')
     @api.response(200, 'Success', fields.Integer)
@@ -82,7 +83,7 @@ class GetFetchMaxAttempts(Resource):
         return _cfg.get_fetch_max_attempts(), 200
 
 
-@ns.route('/api/set-fetch-max-attempts')
+@ns.route('/config/set-fetch-max-attempts')
 class SetFetchMaxAttempts(Resource):
     @api.expect(set_int_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -98,7 +99,7 @@ class SetFetchMaxAttempts(Resource):
 # Endpoints for fetch_max_delay_seconds
 # =========================================================================
 
-@ns.route('/api/get-fetch-max-delay-seconds')
+@ns.route('/config/get-fetch-max-delay-seconds')
 class GetFetchMaxDelaySeconds(Resource):
     @api.doc(description='Getter for fetch_max_delay_seconds. Returns a raw integer.')
     @api.response(200, 'Success', fields.Integer)
@@ -106,7 +107,7 @@ class GetFetchMaxDelaySeconds(Resource):
         return _cfg.get_fetch_max_delay_seconds(), 200
 
 
-@ns.route('/api/set-fetch-max-delay-seconds')
+@ns.route('/config/set-fetch-max-delay-seconds')
 class SetFetchMaxDelaySeconds(Resource):
     @api.expect(set_int_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -122,7 +123,7 @@ class SetFetchMaxDelaySeconds(Resource):
 # Endpoints for single_download_template
 # =========================================================================
 
-@ns.route('/api/get-single-download-template')
+@ns.route('/config/get-single-download-template')
 class GetSingleDownloadTemplate(Resource):
     @api.doc(description='Getter for single_download_template. Returns a raw string.')
     @api.response(200, 'Success', fields.String)
@@ -130,7 +131,7 @@ class GetSingleDownloadTemplate(Resource):
         return _cfg.get_single_download_template(), 200
 
 
-@ns.route('/api/set-single-download-template')
+@ns.route('/config/set-single-download-template')
 class SetSingleDownloadTemplate(Resource):
     @api.expect(set_string_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -146,7 +147,7 @@ class SetSingleDownloadTemplate(Resource):
 # Endpoints for playlist_download_template
 # =========================================================================
 
-@ns.route('/api/get-playlist-download-template')
+@ns.route('/config/get-playlist-download-template')
 class GetPlaylistDownloadTemplate(Resource):
     @api.doc(description='Getter for playlist_download_template. Returns a raw string.')
     @api.response(200, 'Success', fields.String)
@@ -154,7 +155,7 @@ class GetPlaylistDownloadTemplate(Resource):
         return _cfg.get_playlist_download_template(), 200
 
 
-@ns.route('/api/set-playlist-download-template')
+@ns.route('/config/set-playlist-download-template')
 class SetPlaylistDownloadTemplate(Resource):
     @api.expect(set_string_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -175,7 +176,7 @@ download_model = api.model('DownloadRequest', {
     'directory': fields.String(required=True, description='Directory', min_length=1),
 })
 
-@ns.route('/api/single-download')
+@ns.route('/download/single-download')
 class SingleDownloadEndpoint(Resource):
     @api.expect(download_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -193,7 +194,7 @@ class SingleDownloadEndpoint(Resource):
 # =========================================================================
 
 
-@ns.route('/api/playlist-download')
+@ns.route('/download/playlist-download')
 class PlaylistDownloadEndpoint(Resource):
     @api.expect(download_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -201,9 +202,9 @@ class PlaylistDownloadEndpoint(Resource):
     def post(self):
         url = request.json.get('url')
         directory = request.json.get('directory')
-        _ = playlist_download(playlist_url=url, directory=directory)
-        dto: RestResponseDto = RestResponseDto(data=dict())
-        return dto.model_dump(), 200
+        execution_dto: ProgramExecutionDto = playlist_download(playlist_url=url, directory=directory)
+        response_dto: RestResponseDto = RestResponseDto(data=execution_dto.model_dump())
+        return response_dto.model_dump(), 200
 
 
 
