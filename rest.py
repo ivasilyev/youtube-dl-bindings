@@ -4,6 +4,7 @@ from flask_restx import Api, Resource, fields
 from pydantic import BaseModel
 
 from config import ConfigurationManager
+from single_downloader import single_download
 
 
 class RestResponseDto(BaseModel):
@@ -69,7 +70,7 @@ set_string_model = api.model('SetStringRequest', {
 # --- Shared State Setter Wrapper ---
 
 # =========================================================================
-# 1. Endpoints for fetch_max_attempts
+# Endpoints for fetch_max_attempts
 # =========================================================================
 
 @ns.route('/api/get-fetch-max-attempts')
@@ -93,7 +94,7 @@ class SetFetchMaxAttempts(Resource):
 
 
 # =========================================================================
-# 2. Endpoints for fetch_max_delay_seconds
+# Endpoints for fetch_max_delay_seconds
 # =========================================================================
 
 @ns.route('/api/get-fetch-max-delay-seconds')
@@ -117,7 +118,7 @@ class SetFetchMaxDelaySeconds(Resource):
 
 
 # =========================================================================
-# 3. Endpoints for single_download_template
+# Endpoints for single_download_template
 # =========================================================================
 
 @ns.route('/api/get-single-download-template')
@@ -141,7 +142,7 @@ class SetSingleDownloadTemplate(Resource):
 
 
 # =========================================================================
-# 4. Endpoints for playlist_download_template
+# Endpoints for playlist_download_template
 # =========================================================================
 
 @ns.route('/api/get-playlist-download-template')
@@ -161,6 +162,28 @@ class SetPlaylistDownloadTemplate(Resource):
         new_value = request.json.get('value')
         _cfg.set_playlist_download_template(new_value)
         dto: RestResponseDto = RestResponseDto(data={'playlist_download_template': new_value})
+        return dto.model_dump(), 200
+
+
+# =========================================================================
+# Endpoints for single_downloader
+# =========================================================================
+
+download_model = api.model('DownloadRequest', {
+    'url': fields.String(required=True, description='URL', min_length=1),
+    'directory': fields.String(required=True, description='Directory', min_length=1),
+})
+
+@ns.route('/api/single-download')
+class SetPlaylistDownloadTemplate(Resource):
+    @api.expect(download_model, validate=True)
+    @api.marshal_with(rest_response_model, code=200)
+    @api.doc(description='Single download')
+    def post(self):
+        url = request.json.get('url')
+        directory = request.json.get('directory')
+        _ = single_download(url=url, directory=directory)
+        dto: RestResponseDto = RestResponseDto(data=dict())
         return dto.model_dump(), 200
 
 
