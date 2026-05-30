@@ -1,5 +1,8 @@
 import os
+import re
 import subprocess
+from collections import deque
+from typing import List
 
 from pydantic import BaseModel
 
@@ -20,6 +23,15 @@ def is_windows_os() -> bool:
     return os.name == "nt"
 
 
+def sanitize_command(command: str) -> str:
+    commands: List[str] = re.split("[\n\r]+", command)
+    queue: deque[str] = deque()
+    for s in commands:
+        s1 = re.sub("\\$", "", s)
+        queue.append(s1)
+    return " ".join(queue)
+
+
 def run_external_program(command: str, timeout: int = None) -> ProgramExecutionDto:
     """
     Executes an external program and returns its stdout, stderr, and exit code.
@@ -32,10 +44,12 @@ def run_external_program(command: str, timeout: int = None) -> ProgramExecutionD
     Returns:
         A tuple containing (stdout_string, stderr_string, return_code)
     """
+    cmd = sanitize_command(command)
+
     try:
         # Run the command securely using a list of arguments (avoids shell=True)
         result: subprocess.CompletedProcess = subprocess.run(
-            command,
+            cmd,
             capture_output=True,  # Captures both stdout and stderr
             text=True,  # Automatically decodes bytes to string (UTF-8)
             check=False,  # Prevents throwing an error on non-zero exit codes
@@ -60,7 +74,14 @@ def run_external_program(command: str, timeout: int = None) -> ProgramExecutionD
 
 
 def run_external_program_test():
-    log.info(run_external_program('echo "aaaa bbb ccc"').stdout)
+    cmd = """
+echo \
+"aaa \
+bbb \
+ccc"
+"""
+    #
+    log.info(run_external_program(cmd).stdout)
 
 
 if __name__ == '__main__':
