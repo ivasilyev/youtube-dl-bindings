@@ -156,6 +156,11 @@ def render_template(template_string: str, values_dict: dict) -> str:
     return result
 
 
+def quote_string(s: str):
+    s1 = s.strip("'").strip('"')
+    return '"' + s1 + '"'
+
+
 if __name__ == '__main__':
     # fetch_json_with_retry_test()
     # fetch_latest_tag_name_test()
