@@ -6,17 +6,23 @@ from typing import Any, Dict, Optional, List, Tuple
 import requests
 from jsonpath_ng import parse
 
-from config import FETCH_MAX_ATTEMPTS, FETCH_MAX_DELAY_SECONDS
+from config import ConfigurationManager
 from log import log
 
 BINARY_DIR = os.path.join(os.getcwd(), "bin")
+_config = ConfigurationManager()
 
 
-def fetch_json_with_retry(url: str, max_attempts: int = FETCH_MAX_ATTEMPTS,
-                          delay: int = FETCH_MAX_DELAY_SECONDS) -> Optional[Dict[str, Any]]:
+def fetch_json_with_retry(url: str, max_attempts: int = None,
+                          delay: int = None) -> Optional[Dict[str, Any]]:
     """
     Fetches a webpage as JSON with up to 5 attempts using a for loop.
     """
+    if max_attempts is None:
+        max_attempts = _config.get_fetch_max_attempts()
+    if delay is None:
+        delay = _config.get_fetch_max_delay_seconds()
+
     log.info(f"Fetch url: '{url}'")
     for attempt in range(1, max_attempts + 1):
         try:
@@ -56,8 +62,8 @@ def fetch_latest_tag_name(repository: str) -> str:
     return tag_name
 
 
-def fetch_binary_with_retry(url: str, file: str, max_attempts: int = FETCH_MAX_ATTEMPTS,
-                            delay: int = FETCH_MAX_DELAY_SECONDS) -> Optional[str]:
+def fetch_binary_with_retry(url: str, file: str, max_attempts: int = None,
+                            delay: int = None) -> Optional[str]:
     """
     Fetches a web binary file as raw bytes with up to 5 attempts using a for loop.
 
@@ -70,6 +76,11 @@ def fetch_binary_with_retry(url: str, file: str, max_attempts: int = FETCH_MAX_A
     Returns:
         The raw bytes of the file if successful, or None if all attempts fail.
     """
+    if max_attempts is None:
+        max_attempts = _config.get_fetch_max_attempts()
+    if delay is None:
+        delay = _config.get_fetch_max_delay_seconds()
+
     log.info(f"Fetch url: '{url}'")
     for attempt in range(1, max_attempts + 1):
         try:
