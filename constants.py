@@ -5,7 +5,7 @@ BINARY_DIR = os.path.join(ROOT_DIR, "bin")
 CONFIG_FILE = os.path.join(ROOT_DIR, "config.json")
 
 # Default values
-DEFAULT_YT_DLP_CMD_TEMPLATE = """
+DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE = """
 "{{ bin }} \
     --abort-on-unavailable-fragment \
     --mtime \
@@ -33,5 +33,14 @@ DEFAULT_YT_DLP_CMD_TEMPLATE = """
     --remux-video=mkv \
     --output={{ directory }}/%(title)s__%(id)s.%(ext)s \
     --verbose \
+    {{ url }}
+"""
+
+DEFAULT_PLAYLIST_DOWNLOAD_CMD_TEMPLATE = """
+{{ bin }} \
+    --ignore-errors \
+    --flat-playlist \
+    --print-to-file=%(id)s \
+    {{ file }} \
     {{ url }}
 """
