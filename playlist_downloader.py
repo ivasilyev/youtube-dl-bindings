@@ -18,7 +18,9 @@ def check_id_in_directory(video_id: str, directory: str):
     files: List[str] = find_files(directory)
     for file in files:
         if video_id in os.path.basename(file):
+            log.debug("Video ID '{video_id}' found in '{directory}'")
             return True
+    log.debug("Video ID '{video_id}' not found in '{directory}'")
     return False
 
 
@@ -36,7 +38,9 @@ def playlist_download(playlist_url: str, directory: str):
     command = sanitize_command(render_template(template_string=template, values_dict=values_dict))
     try:
         run_external_program(command=command)
+        log.info(f"Saved video IDs to temporary file: '{file}'")
         lines: List[str] = load_lines(file)
+        counter = 0
         for line in lines:
             video_id = line.strip()
             if check_id_in_directory(video_id=video_id, directory=directory):
@@ -44,8 +48,11 @@ def playlist_download(playlist_url: str, directory: str):
                 continue
             video_url = f"https://www.youtube.com/watch?v={video_id}"
             single_download(url=video_url, directory=directory)
+            counter += 1
+        log.info(f"Processed {counter} IDs")
     finally:
         os.remove(file)
+        log.info(f"Removed temporary file with video IDs: '{file}'")
 
 
 # tests
@@ -55,7 +62,7 @@ def playlist_download_test():
     url = "https://www.youtube.com/watch?v=zqTwOoElxBA"  # WOW
     directory = "/tmp"
     #
-    playlist_download(url=url, directory=directory)
+    playlist_download(playlist_url=url, directory=directory)
 
 
 if __name__ == '__main__':
