@@ -4,15 +4,15 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field, ValidationError
 
-from constants import CONFIG_FILE
+from constants import CONFIG_FILE, DEFAULT_YT_DLP_CMD_TEMPLATE
 from system_utils import is_windows_os
 
 
 def get_default_yt_dlp_cmd() -> str:
     if is_windows_os():
-        return 'yt-dlp.exe "{{ url }}" "{{ directory }}"'
+        return DEFAULT_YT_DLP_CMD_TEMPLATE.replace("{{ bin }}", "yt-dlp.exe")
     else:
-        return 'yt-dlp "{{ url }}" "{{ directory }}"'
+        return DEFAULT_YT_DLP_CMD_TEMPLATE.replace("{{ bin }}", "yt-dlp")
 
 
 # 1. The DTO containing your exact default values and validation guardrails
@@ -143,3 +143,8 @@ class ConfigurationManager:
                 self.__save_to_disk()
             except ValidationError as e:
                 raise ValueError(f"Invalid yt_dlp_command_template constraint: {e}")
+
+
+# tests
+
+
