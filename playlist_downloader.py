@@ -2,6 +2,7 @@ import os
 import tempfile
 from typing import List
 
+from arch_based_data_provider import get_yt_dlp_bin
 from config import ConfigurationManager
 from constants import ENCODING_UTF8
 from file_system_utils import find_files
@@ -9,7 +10,7 @@ from io_utils import load_lines
 from log import log
 from single_downloader import single_download
 from system_utils import run_external_program
-from utils import render_template
+from utils import render_template, quote_string
 
 _cfg = ConfigurationManager()
 
@@ -34,7 +35,12 @@ def playlist_download(playlist_url: str, directory: str):
     file = temp_file.name
     # Close it right away to handle the "open" command later
     temp_file.close()
-    values_dict = dict(url=playlist_url, file=file)
+    bin = get_yt_dlp_bin()
+    values_dict = dict(
+        bin=quote_string(bin),
+        url=quote_string(playlist_url),
+        file=quote_string(file),
+    )
     command = render_template(template_string=template, values_dict=values_dict)
     try:
         run_external_program(command=command)

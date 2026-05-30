@@ -5,11 +5,7 @@ from typing import Union
 
 from pydantic import BaseModel, Field, ValidationError
 
-from arch_based_data_provider import get_default_single_download_cmd, get_default_playlist_download_cmd
-from constants import CONFIG_FILE
-
-
-# 1. The DTO containing your exact default values and validation guardrails
+from constants import CONFIG_FILE, DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE, DEFAULT_PLAYLIST_DOWNLOAD_CMD_TEMPLATE
 from system_utils import sanitize_command
 
 
@@ -25,12 +21,12 @@ class ConfigDTO(BaseModel):
         description="Maximum delay in seconds between attempts"
     )
     single_download_template: str = Field(
-        default=get_default_single_download_cmd(),
+        default=DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE,
         min_length=1,
         description="Single download command template"
     )
     playlist_download_template: str = Field(
-        default=get_default_playlist_download_cmd(),
+        default=DEFAULT_PLAYLIST_DOWNLOAD_CMD_TEMPLATE,
         min_length=1,
         description="Playlist download command template"
     )
