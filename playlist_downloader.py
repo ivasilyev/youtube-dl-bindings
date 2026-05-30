@@ -35,7 +35,7 @@ def playlist_download(playlist_url: str, directory: str):
     # Close it right away to handle the "open" command later
     temp_file.close()
     values_dict = dict(url=playlist_url, file=file)
-    command = sanitize_command(render_template(template_string=template, values_dict=values_dict))
+    command = render_template(template_string=template, values_dict=values_dict)
     try:
         run_external_program(command=command)
         log.info(f"Saved video IDs to temporary file: '{file}'")

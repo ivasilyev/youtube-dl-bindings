@@ -10,6 +10,9 @@ from constants import CONFIG_FILE
 
 
 # 1. The DTO containing your exact default values and validation guardrails
+from system_utils import sanitize_command
+
+
 class ConfigDTO(BaseModel):
     fetch_max_attempts: int = Field(
         default=10,
@@ -107,7 +110,7 @@ class ConfigurationManager:
     def set_fetch_max_attempts(self, value: int) -> None:
         with self.__lock:
             try:
-                ConfigDTO(
+                _ = ConfigDTO(
                     fetch_max_attempts=value,
                     fetch_max_delay_seconds=self.__fetch_max_delay_seconds,
                     single_download_template=self.__single_download_template,
@@ -125,7 +128,7 @@ class ConfigurationManager:
     def set_fetch_max_delay_seconds(self, value: int) -> None:
         with self.__lock:
             try:
-                ConfigDTO(
+                _ = ConfigDTO(
                     fetch_max_attempts=self.__fetch_max_attempts,
                     fetch_max_delay_seconds=value,
                     single_download_template=self.__single_download_template,
@@ -141,15 +144,16 @@ class ConfigurationManager:
             return self.__single_download_template
 
     def set_single_download_template(self, value: str) -> None:
+        s = sanitize_command(value)
         with self.__lock:
             try:
-                ConfigDTO(
+                _ = ConfigDTO(
                     fetch_max_attempts=self.__fetch_max_attempts,
                     fetch_max_delay_seconds=self.__fetch_max_delay_seconds,
-                    single_download_template=value,
+                    single_download_template=s,
                     playlist_download_template=self.__playlist_download_template,
                 )
-                self.__single_download_template = value
+                self.__single_download_template = s
                 self.__save_to_disk()
             except ValidationError as e:
                 raise ValueError(f"Invalid single_download_template constraint: {e}")
@@ -159,15 +163,16 @@ class ConfigurationManager:
             return self.__single_download_template
 
     def set_playlist_download_template(self, value: str) -> None:
+        s = sanitize_command(value)
         with self.__lock:
             try:
-                ConfigDTO(
+                _ = ConfigDTO(
                     fetch_max_attempts=self.__fetch_max_attempts,
                     fetch_max_delay_seconds=self.__fetch_max_delay_seconds,
                     single_download_template=self.__single_download_template,
-                    playlist_download_template=value,
+                    playlist_download_template=s,
                 )
-                self.__playlist_download_template = value
+                self.__playlist_download_template = s
                 self.__save_to_disk()
             except ValidationError as e:
                 raise ValueError(f"Invalid single_download_template constraint: {e}")
