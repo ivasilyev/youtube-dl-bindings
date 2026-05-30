@@ -17,3 +17,9 @@ pip install -r requirements.txt
 
 python updater.py
 ```
+
+## Run web server
+
+```shell script
+python3 rest.py
+```
