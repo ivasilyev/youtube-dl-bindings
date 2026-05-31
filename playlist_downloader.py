@@ -30,6 +30,7 @@ def check_id_in_directory(video_id: str, directory: str):
 
 
 def playlist_download(playlist_url: str, directory: str):
+    log.info(f"Download playlist '{playlist_url}' into directory '{directory}'")
     template = _cfg.get_playlist_download_template()
     temp_file: tempfile._TemporaryFileWrapper = tempfile.NamedTemporaryFile(
         mode='w+',
@@ -83,16 +84,5 @@ def args_based_run():
     playlist_download(playlist_url=url, directory=directory)
 
 
-# tests
-
-
-def test_playlist_download():
-    url = "https://www.youtube.com/playlist?list=PLmBK9jc1368IfTwX0Vf3G_6GROJYc2XrH"
-    directory = "/tmp"
-    #
-    playlist_download(playlist_url=url, directory=directory)
-
-
 if __name__ == '__main__':
-    # test_playlist_download()
     args_based_run()

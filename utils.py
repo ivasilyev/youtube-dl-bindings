@@ -9,6 +9,7 @@ from jsonpath_ng import parse
 from configs import ConfigurationManager
 from constants import BINARY_DIR
 from log import log
+from tests import download_latest_github_release_test
 
 _config = ConfigurationManager()
 
@@ -117,39 +118,6 @@ def download_latest_github_release(repository: str, file: str):
     fetch_binary_with_retry(url=url, file=os.path.join(BINARY_DIR, file))
 
 
-# tests
-
-
-def fetch_json_with_retry_test():
-    url = "https://api.github.com/repos/ytdl-org/youtube-dl/releases"
-    #
-    d: dict = fetch_json_with_retry(url)
-    log.info(d)
-
-
-def fetch_latest_tag_name_test():
-    repository = "ytdl-org/youtube-dl"
-    #
-    latest_tag_name = fetch_latest_tag_name(repository=repository)
-    log.info(latest_tag_name)
-
-
-def fetch_binary_with_retry_test():
-    file = "youtube-dl.exe"
-    #
-    fetch_binary_with_retry(
-        url=f"https://github.com/ytdl-org/youtube-dl/releases/download/2021.12.17/{file}",
-        file=os.path.join(BINARY_DIR, file)
-    )
-
-
-def download_latest_github_release_test():
-    repository = "ytdl-org/youtube-dl"
-    file = "youtube-dl.exe"
-    #
-    download_latest_github_release(repository=repository, file=file)
-
-
 def render_template(template_string: str, values_dict: dict) -> str:
     template = Template(template_string)
     result = template.render(**values_dict)
@@ -159,10 +127,3 @@ def render_template(template_string: str, values_dict: dict) -> str:
 def quote_string(s: str):
     s1 = s.strip("'").strip('"')
     return '"' + s1 + '"'
-
-
-if __name__ == '__main__':
-    # fetch_json_with_retry_test()
-    # fetch_latest_tag_name_test()
-    # fetch_binary_with_retry_test()
-    download_latest_github_release_test()

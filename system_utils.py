@@ -85,20 +85,3 @@ def run_external_program(command: str, timeout: int = None) -> ProgramExecutionD
         log.info(f"Error: The executable was not found.")
         return ProgramExecutionDto(stdout="", stderr="Executable not found.", success=False)
 
-
-# tests
-
-
-def run_external_program_test():
-    cmd = """
-echo \
-"aaa \
-bbb \
-ccc"
-"""
-    #
-    log.info(run_external_program(cmd).stdout)
-
-
-if __name__ == '__main__':
-    run_external_program_test()

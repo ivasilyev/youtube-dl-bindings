@@ -44,16 +44,5 @@ def args_based_run():
     single_download(url=url, directory=directory)
 
 
-# tests
-
-
-def test_single_download():
-    url = "https://www.youtube.com/watch?v=zqTwOoElxBA"  # WOW
-    directory = "/tmp"
-    #
-    single_download(url=url, directory=directory)
-
-
 if __name__ == '__main__':
-    # test_single_download()
     args_based_run()

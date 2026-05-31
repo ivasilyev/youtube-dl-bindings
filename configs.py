@@ -172,8 +172,3 @@ class ConfigurationManager:
                 self.__save_to_disk()
             except ValidationError as e:
                 raise ValueError(f"Invalid single_download_template constraint: {e}")
-
-
-# tests
-
-
