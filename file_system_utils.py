@@ -238,3 +238,16 @@ def remove_recursively(target_path: str) -> bool:
     except Exception as e:
         log.info(f"An unexpected error occurred while deleting: {e}")
         return False
+
+
+def add_execution_permissions(target_dir: str):
+    # Loop through the directory, folders, and files
+    for path in Path(target_dir).rglob('*'):
+        # Get the current file permissions
+        current_mode = path.stat().st_mode
+
+        # Add execute permissions for User, Group, and Others (a+x)
+        new_mode = current_mode | 0o111
+
+        # Apply the new permissions
+        path.chmod(new_mode)
