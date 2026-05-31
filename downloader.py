@@ -41,13 +41,11 @@ class ThreadSafeDownloader:
 
     def push(self, url: str, directory: str, ):
         """Thread-safe method to add a new download item to the queue."""
-        with self._queue.mutex:
-            self._queue.put(dict(url=url, directory=directory))
+        self._queue.put(dict(url=url, directory=directory))
         print(f"[Queue] Added: {url}")
 
     def get_queued_items(self) -> List[str]:
-        with self._queue.mutex:
-            items: List[dict] = list(self._queue.queue)
+        items: List[dict] = list(self._queue.queue)
         if not items:
             return list()
         formatted_list = [f"{idx + 1}. " + json.dumps(i) for idx, i in enumerate(items)]
