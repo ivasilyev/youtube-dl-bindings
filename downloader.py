@@ -43,7 +43,7 @@ class ThreadSafeDownloader:
         """Thread-safe method to add a new download item to the queue."""
         with self._queue.mutex:
             self._queue.put(dict(url=url, directory=directory))
-        log.info(f"[Queue] Added: {url}")
+        print(f"[Queue] Added: {url}")
 
     def get_queued_items(self) -> List[str]:
         with self._queue.mutex:
@@ -55,9 +55,9 @@ class ThreadSafeDownloader:
 
     def download(self, url: str, directory: str, ):
         """Simulates a blocking download process."""
-        log.info(f"[Download] Starting: {url}")
+        print(f"[Download] Starting: {url}")
         single_download(url=url, directory=directory)
-        log.info(f"[Download] Finished: {url}")
+        print(f"[Download] Finished: {url}")
 
     def _process_queue(self):
         """Internal loop checking for items every 5 seconds without busy-waiting."""
@@ -69,7 +69,7 @@ class ThreadSafeDownloader:
                 self._queue.task_done()
             except queue.Empty:
                 # Triggered every 5 seconds if the queue remains empty
-                log.info("[Worker] Checking queue... No new downloads found.")
+                print("[Worker] Checking queue... No new downloads found.")
 
     def stop(self):
         """Gracefully stops the worker loop."""
