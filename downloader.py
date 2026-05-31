@@ -1,11 +1,18 @@
 import queue
 import time
 import threading
+from typing import List
+
+from log import log
 
 
 class ThreadSafeDownloader:
+    """
+    Single video download daemon
+    """
     _instance = None
     _lock = threading.Lock()
+    _queue = queue.Queue()
 
     def __new__(cls, *args, **kwargs):
         """Ensures only one instance of the downloader is created safely across threads."""
@@ -21,7 +28,6 @@ class ThreadSafeDownloader:
         if self._initialized:
             return
 
-        self._queue = queue.Queue()
         self._is_running = True
 
         # Start the background polling loop
@@ -32,17 +38,26 @@ class ThreadSafeDownloader:
 
         self._initialized = True
 
-    def push(self, url: str):
+    def push(self, url: str, ):
         """Thread-safe method to add a new download item to the queue."""
-        self._queue.put(url)
-        print(f"[Queue] Added: {url}")
+        with self._queue.mutex:
+            self._queue.put(url)
+        log.info(f"[Queue] Added: {url}")
+
+    def get_queued_items(self) -> str:
+        with self._queue.mutex:
+            items: List[str] = list(self._queue.queue)
+        if not items:
+            return ""
+        formatted_list = [f"{i+1}. {url}" for i, url in enumerate(items)]
+        return "\n".join(formatted_list)
 
     def download(self, url: str):
         """Simulates a blocking download process."""
-        print(f"[Download] Starting: {url}")
+        log.info(f"[Download] Starting: {url}")
         # Simulating network latency
         time.sleep(2)
-        print(f"[Download] Finished: {url}")
+        log.info(f"[Download] Finished: {url}")
 
     def _process_queue(self):
         """Internal loop checking for items every 5 seconds without busy-waiting."""
@@ -54,8 +69,11 @@ class ThreadSafeDownloader:
                 self._queue.task_done()
             except queue.Empty:
                 # Triggered every 5 seconds if the queue remains empty
-                print("[Worker] Checking queue... No new downloads found.")
+                log.info("[Worker] Checking queue... No new downloads found.")
 
     def stop(self):
         """Gracefully stops the worker loop."""
         self._is_running = False
+
+
+downloader = ThreadSafeDownloader()
