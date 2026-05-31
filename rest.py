@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from typing import List
 
 from flask import Flask, request, render_template_string
 from flask_restx import Api, Resource, fields
@@ -229,6 +230,21 @@ class PlaylistDownloadEndpoint(Resource):
         playlist_download(playlist_url=url, directory=directory)
         response_dto: RestResponseDto = RestResponseDto(data=dict())
         return response_dto.model_dump(), 200
+
+
+# =========================================================================
+# Endpoints for downloader
+# =========================================================================
+
+
+@api_ns.route('/view-queue')
+class ViewQueueEndpoint(Resource):
+    @api.marshal_with(rest_response_model, code=200)
+    @api.doc(description='View queue')
+    def get(self):
+        items: List[dict] = downloader.get_queued_items()
+        dto: RestResponseDto = RestResponseDto(data=items)
+        return dto.model_dump(), 200
 
 
 def run():

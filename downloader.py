@@ -44,12 +44,11 @@ class ThreadSafeDownloader:
         self._queue.put(dict(url=url, directory=directory))
         print(f"[Queue] Added: {url}")
 
-    def get_queued_items(self) -> List[str]:
+    def get_queued_items(self) -> List[dict]:
         items: List[dict] = list(self._queue.queue)
-        if not items:
+        if items is None:
             return list()
-        formatted_list = [f"{idx + 1}. " + json.dumps(i) for idx, i in enumerate(items)]
-        return formatted_list
+        return items
 
     def download(self, url: str, directory: str, ):
         """Simulates a blocking download process."""
