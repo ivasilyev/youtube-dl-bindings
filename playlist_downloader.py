@@ -13,13 +13,13 @@ from downloader import downloader
 from file_system_utils import find_files
 from io_utils import load_lines
 from log import log
-from single_downloader import single_download
 from system_utils import run_external_program
 from utils import render_template, quote_string, remove_empty_values
 
 _cfg = ConfigurationManager()
 
 
+# deprecated
 def check_id_in_directory(video_id: str, directory: str):
     files: List[str] = find_files(directory)
     for file in files:
@@ -54,9 +54,11 @@ def playlist_download(playlist_url: str, directory: str):
         raw_lines: List[str] = load_lines(file)
         lines: List[str] = remove_empty_values(raw_lines)
         counter = 0
+        basenames: List[str] = os.listdir(directory)
         for line in lines:
             video_id = line.strip()
-            if check_id_in_directory(video_id=video_id, directory=directory):
+            matches = [i for i in basenames if video_id in i]
+            if len(matches) > 0:
                 log.info(f"Skip ID '{video_id}'")
                 continue
             video_url = f"https://www.youtube.com/watch?v={video_id}"
