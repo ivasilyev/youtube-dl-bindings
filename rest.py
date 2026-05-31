@@ -226,7 +226,7 @@ class PlaylistDownloadEndpoint(Resource):
     def post(self):
         url = request.json.get('url')
         directory = request.json.get('directory')
-        downloader.push(url=url, directory=directory)
+        playlist_download(playlist_url=url, directory=directory)
         response_dto: RestResponseDto = RestResponseDto(data=dict())
         return response_dto.model_dump(), 200
 
