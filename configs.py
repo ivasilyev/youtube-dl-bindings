@@ -156,7 +156,7 @@ class ConfigurationManager:
 
     def get_playlist_download_template(self) -> str:
         with self.__lock:
-            return self.__single_download_template
+            return self.__playlist_download_template
 
     def set_playlist_download_template(self, value: str) -> None:
         s = sanitize_command(value)
