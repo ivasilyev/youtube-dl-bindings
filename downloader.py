@@ -1,9 +1,11 @@
+import json
 import queue
 import time
 import threading
 from typing import List
 
 from log import log
+from single_downloader import single_download
 
 
 class ThreadSafeDownloader:
@@ -38,25 +40,24 @@ class ThreadSafeDownloader:
 
         self._initialized = True
 
-    def push(self, url: str, ):
+    def push(self, url: str, directory: str, ):
         """Thread-safe method to add a new download item to the queue."""
         with self._queue.mutex:
-            self._queue.put(url)
+            self._queue.put(dict(url=url, directory=directory))
         log.info(f"[Queue] Added: {url}")
 
-    def get_queued_items(self) -> str:
+    def get_queued_items(self) -> List[str]:
         with self._queue.mutex:
-            items: List[str] = list(self._queue.queue)
+            items: List[dict] = list(self._queue.queue)
         if not items:
-            return ""
-        formatted_list = [f"{i+1}. {url}" for i, url in enumerate(items)]
-        return "\n".join(formatted_list)
+            return list()
+        formatted_list = [f"{idx + 1}. " + json.dumps(i) for idx, i in enumerate(items)]
+        return formatted_list
 
-    def download(self, url: str):
+    def download(self, url: str, directory: str, ):
         """Simulates a blocking download process."""
         log.info(f"[Download] Starting: {url}")
-        # Simulating network latency
-        time.sleep(2)
+        single_download(url=url, directory=directory)
         log.info(f"[Download] Finished: {url}")
 
     def _process_queue(self):
@@ -64,8 +65,8 @@ class ThreadSafeDownloader:
         while self._is_running:
             try:
                 # wait up to 5 seconds for an item
-                url = self._queue.get(timeout=5)
-                self.download(url)
+                kwargs = self._queue.get(timeout=5)
+                self.download(**kwargs)
                 self._queue.task_done()
             except queue.Empty:
                 # Triggered every 5 seconds if the queue remains empty

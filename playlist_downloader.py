@@ -9,6 +9,7 @@ from typing import List, Tuple
 from arch_based_data_provider import get_yt_dlp_bin
 from configs import ConfigurationManager
 from constants import ENCODING_UTF8
+from downloader import downloader
 from file_system_utils import find_files
 from io_utils import load_lines
 from log import log
@@ -59,7 +60,7 @@ def playlist_download(playlist_url: str, directory: str):
                 log.info(f"Skip ID '{video_id}'")
                 continue
             video_url = f"https://www.youtube.com/watch?v={video_id}"
-            single_download(url=video_url, directory=directory)
+            downloader.push(url=video_url, directory=directory)
             counter += 1
         log.info(f"Processed {counter} IDs")
     finally:
