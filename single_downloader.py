@@ -1,3 +1,6 @@
+from argparse import ArgumentParser
+from typing import Tuple
+
 from arch_based_data_provider import get_yt_dlp_bin
 from config import ConfigurationManager
 from log import log
@@ -20,6 +23,24 @@ def single_download(url: str, directory: str) -> ProgramExecutionDto:
     return run_external_program(command=command)
 
 
+def parse_args() -> Tuple[str, str]:
+    # 1. Create the parser object
+    parser: ArgumentParser = ArgumentParser(description="Single video downloader.")
+
+    # 2. Add the two required arguments
+    parser.add_argument("-u", "--url", help="Single video URL")
+    parser.add_argument("-d", "--dir", help="Directory to download")
+
+    # 3. Parse the arguments from the CLI
+    args = parser.parse_args()
+    return args.url, args.dir
+
+
+def args_based_run():
+    url, directory = parse_args()
+    single_download(url=url, directory=directory)
+
+
 # tests
 
 
@@ -31,4 +52,5 @@ def single_download_test():
 
 
 if __name__ == '__main__':
-    single_download_test()
+    # single_download_test()
+    args_based_run()
