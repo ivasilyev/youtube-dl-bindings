@@ -6,6 +6,7 @@ from flask_restx import Api, Resource, fields
 from pydantic import BaseModel
 
 from configs import ConfigurationManager
+from downloader import downloader
 from playlist_downloader import playlist_download
 from single_downloader import single_download
 from system_utils import ProgramExecutionDto
@@ -207,9 +208,9 @@ class SingleDownloadEndpoint(Resource):
     def post(self):
         url = request.json.get('url')
         directory = request.json.get('directory')
-        _ = single_download(url=url, directory=directory)
-        dto: RestResponseDto = RestResponseDto(data=dict())
-        return dto.model_dump(), 200
+        downloader.push(url=url, directory=directory)
+        response_dto: RestResponseDto = RestResponseDto(data=dict())
+        return response_dto.model_dump(), 200
 
 
 # =========================================================================
@@ -225,8 +226,8 @@ class PlaylistDownloadEndpoint(Resource):
     def post(self):
         url = request.json.get('url')
         directory = request.json.get('directory')
-        execution_dto: ProgramExecutionDto = playlist_download(playlist_url=url, directory=directory)
-        response_dto: RestResponseDto = RestResponseDto(data=execution_dto.model_dump())
+        downloader.push(url=url, directory=directory)
+        response_dto: RestResponseDto = RestResponseDto(data=dict())
         return response_dto.model_dump(), 200
 
 
