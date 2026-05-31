@@ -94,4 +94,5 @@ def playlist_download_test():
 
 
 if __name__ == '__main__':
-    playlist_download_test()
+    # playlist_download_test()
+    args_based_run
