@@ -6,7 +6,7 @@ from flask_restx import Api, Resource, fields
 
 from pydantic import BaseModel
 
-from config import ConfigurationManager
+from configs import ConfigurationManager
 from playlist_downloader import playlist_download
 from single_downloader import single_download
 from system_utils import ProgramExecutionDto

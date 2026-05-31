@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from typing import List, Tuple
 
 from arch_based_data_provider import get_yt_dlp_bin
-from config import ConfigurationManager
+from configs import ConfigurationManager
 from constants import ENCODING_UTF8
 from file_system_utils import find_files
 from io_utils import load_lines
@@ -86,7 +86,7 @@ def args_based_run():
 # tests
 
 
-def playlist_download_test():
+def test_playlist_download():
     url = "https://www.youtube.com/playlist?list=PLmBK9jc1368IfTwX0Vf3G_6GROJYc2XrH"
     directory = "/tmp"
     #
@@ -94,5 +94,5 @@ def playlist_download_test():
 
 
 if __name__ == '__main__':
-    # playlist_download_test()
-    args_based_run
+    # test_playlist_download()
+    args_based_run()

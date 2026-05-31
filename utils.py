@@ -6,7 +6,7 @@ import requests
 from jinja2 import Template
 from jsonpath_ng import parse
 
-from config import ConfigurationManager
+from configs import ConfigurationManager
 from constants import BINARY_DIR
 from log import log
 

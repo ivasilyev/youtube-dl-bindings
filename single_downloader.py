@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 from typing import Tuple
 
 from arch_based_data_provider import get_yt_dlp_bin
-from config import ConfigurationManager
+from configs import ConfigurationManager
 from log import log
 from system_utils import run_external_program, ProgramExecutionDto
 from utils import render_template, quote_string
@@ -47,7 +47,7 @@ def args_based_run():
 # tests
 
 
-def single_download_test():
+def test_single_download():
     url = "https://www.youtube.com/watch?v=zqTwOoElxBA"  # WOW
     directory = "/tmp"
     #
@@ -55,5 +55,5 @@ def single_download_test():
 
 
 if __name__ == '__main__':
-    # single_download_test()
+    # test_single_download()
     args_based_run()
