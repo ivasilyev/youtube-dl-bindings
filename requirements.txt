@@ -3,4 +3,5 @@ flask-restx
 jinja2
 jsonpath-ng
 pydantic
+pytest
 requests
