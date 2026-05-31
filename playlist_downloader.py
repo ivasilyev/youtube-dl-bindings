@@ -1,6 +1,7 @@
 import os
 import tempfile
-from typing import List
+from argparse import ArgumentParser
+from typing import List, Tuple
 
 from arch_based_data_provider import get_yt_dlp_bin
 from config import ConfigurationManager
@@ -59,6 +60,24 @@ def playlist_download(playlist_url: str, directory: str):
     finally:
         os.remove(file)
         log.info(f"Removed temporary file with video IDs: '{file}'")
+
+
+def parse_args() -> Tuple[str, str]:
+    # 1. Create the parser object
+    parser: ArgumentParser = ArgumentParser(description="Single video downloader.")
+
+    # 2. Add the two required arguments
+    parser.add_argument("-u", "--url", help="Video playlist URL")
+    parser.add_argument("-d", "--dir", help="Directory to download")
+
+    # 3. Parse the arguments from the CLI
+    args = parser.parse_args()
+    return args.url, args.dir
+
+
+def args_based_run():
+    url, directory = parse_args()
+    playlist_download(playlist_url=url, directory=directory)
 
 
 # tests
