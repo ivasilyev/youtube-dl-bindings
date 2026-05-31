@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Sized
 
 import requests
 from jinja2 import Template
@@ -126,3 +126,16 @@ def render_template(template_string: str, values_dict: dict) -> str:
 def quote_string(s: str):
     s1 = s.strip("'").strip('"')
     return '"' + s1 + '"'
+
+
+def is_empty(x: Any) -> bool:
+    if x is None:
+        return True
+    if hasattr(x, "__len__") and len(x) == 0:
+        return True
+    return False
+
+
+def remove_empty_values(x: list):
+    return [i for i in x if not is_empty(i)]
+

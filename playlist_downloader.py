@@ -14,7 +14,7 @@ from io_utils import load_lines
 from log import log
 from single_downloader import single_download
 from system_utils import run_external_program
-from utils import render_template, quote_string
+from utils import render_template, quote_string, remove_empty_values
 
 _cfg = ConfigurationManager()
 
@@ -50,7 +50,8 @@ def playlist_download(playlist_url: str, directory: str):
     try:
         run_external_program(command=command)
         log.info(f"Saved video IDs to temporary file: '{file}'")
-        lines: List[str] = [i for i in load_lines(file) if i is not None and len(i) > 0]
+        raw_lines: List[str] = load_lines(file)
+        lines: List[str] = remove_empty_values(raw_lines)
         counter = 0
         for line in lines:
             video_id = line.strip()
