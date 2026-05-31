@@ -23,3 +23,19 @@ python updater.py
 ```shell script
 python3 rest.py
 ```
+
+## Run standalone single video downloader
+
+```shell script
+python3 single_downloader.py \
+    --url "https://www.youtube.com/watch?v=zqTwOoElxBA" \
+    --dir "/tmp"
+```
+
+## Run standalone playlist video downloader
+
+```shell script
+python3 playlist_downloader.py \
+    --url "https://www.youtube.com/playlist?list=PLmBK9jc1368IfTwX0Vf3G_6GROJYc2XrH" \
+    --dir "/tmp"
+```
