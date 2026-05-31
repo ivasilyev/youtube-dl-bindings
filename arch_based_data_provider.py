@@ -1,6 +1,3 @@
-import os
-
-from constants import DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE, DEFAULT_PLAYLIST_DOWNLOAD_CMD_TEMPLATE, BINARY_DIR
 from system_utils import is_windows_os
 
 

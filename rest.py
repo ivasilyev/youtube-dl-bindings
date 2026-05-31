@@ -3,7 +3,6 @@
 
 from flask import Flask, request, render_template_string
 from flask_restx import Api, Resource, fields
-
 from pydantic import BaseModel
 
 from configs import ConfigurationManager

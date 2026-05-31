@@ -9,7 +9,6 @@ from jsonpath_ng import parse
 from configs import ConfigurationManager
 from constants import BINARY_DIR
 from log import log
-from tests import download_latest_github_release_test
 
 _config = ConfigurationManager()
 
