@@ -84,7 +84,7 @@ def args_based_run():
 
 
 def playlist_download_test():
-    url = "https://www.youtube.com/watch?v=zqTwOoElxBA"  # WOW
+    url = "https://www.youtube.com/playlist?list=PLmBK9jc1368IfTwX0Vf3G_6GROJYc2XrH"
     directory = "/tmp"
     #
     playlist_download(playlist_url=url, directory=directory)
