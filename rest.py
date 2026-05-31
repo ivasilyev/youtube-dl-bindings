@@ -51,7 +51,7 @@ api = Api(
     description='Youtube-DL bindings interactive API demonstration',
     doc='/swagger'
 )
-ns = api.namespace('api', description='Main operations')
+api_ns = api.namespace('api', description='Main operations')
 
 
 # --- Explicit Flask-Restx Swagger Models ---
@@ -79,7 +79,7 @@ set_string_model = api.model('SetStringRequest', {
 # =========================================================================
 
 
-@ns.route('/config/get-fetch-max-attempts')
+@api_ns.route('/config/get-fetch-max-attempts')
 class GetFetchMaxAttempts(Resource):
     @api.doc(description='Getter for fetch_max_attempts. Returns a raw integer.')
     @api.response(200, 'Success', fields.Integer)
@@ -87,7 +87,7 @@ class GetFetchMaxAttempts(Resource):
         return _cfg.get_fetch_max_attempts(), 200
 
 
-@ns.route('/config/set-fetch-max-attempts')
+@api_ns.route('/config/set-fetch-max-attempts')
 class SetFetchMaxAttempts(Resource):
     @api.expect(set_int_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -104,7 +104,7 @@ class SetFetchMaxAttempts(Resource):
 # =========================================================================
 
 
-@ns.route('/config/get-fetch-max-delay-seconds')
+@api_ns.route('/config/get-fetch-max-delay-seconds')
 class GetFetchMaxDelaySeconds(Resource):
     @api.doc(description='Getter for fetch_max_delay_seconds. Returns a raw integer.')
     @api.response(200, 'Success', fields.Integer)
@@ -112,7 +112,7 @@ class GetFetchMaxDelaySeconds(Resource):
         return _cfg.get_fetch_max_delay_seconds(), 200
 
 
-@ns.route('/config/set-fetch-max-delay-seconds')
+@api_ns.route('/config/set-fetch-max-delay-seconds')
 class SetFetchMaxDelaySeconds(Resource):
     @api.expect(set_int_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -129,7 +129,7 @@ class SetFetchMaxDelaySeconds(Resource):
 # =========================================================================
 
 
-@ns.route('/config/get-single-download-template')
+@api_ns.route('/config/get-single-download-template')
 class GetSingleDownloadTemplate(Resource):
     @api.doc(description='Getter for single_download_template. Returns a raw string.')
     @api.response(200, 'Success', fields.String)
@@ -137,7 +137,7 @@ class GetSingleDownloadTemplate(Resource):
         return _cfg.get_single_download_template(), 200
 
 
-@ns.route('/config/set-single-download-template')
+@api_ns.route('/config/set-single-download-template')
 class SetSingleDownloadTemplate(Resource):
     @api.expect(set_string_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -154,7 +154,7 @@ class SetSingleDownloadTemplate(Resource):
 # =========================================================================
 
 
-@ns.route('/config/get-playlist-download-template')
+@api_ns.route('/config/get-playlist-download-template')
 class GetPlaylistDownloadTemplate(Resource):
     @api.doc(description='Getter for playlist_download_template. Returns a raw string.')
     @api.response(200, 'Success', fields.String)
@@ -162,7 +162,7 @@ class GetPlaylistDownloadTemplate(Resource):
         return _cfg.get_playlist_download_template(), 200
 
 
-@ns.route('/config/set-playlist-download-template')
+@api_ns.route('/config/set-playlist-download-template')
 class SetPlaylistDownloadTemplate(Resource):
     @api.expect(set_string_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -179,7 +179,7 @@ class SetPlaylistDownloadTemplate(Resource):
 # =========================================================================
 
 
-@ns.route('/update')
+@api_ns.route('/update')
 class UpdateEndpoint(Resource):
     @api.marshal_with(rest_response_model, code=200)
     @api.doc(description='Update')
@@ -199,7 +199,7 @@ download_model = api.model('DownloadRequest', {
     'directory': fields.String(required=True, description='Directory', min_length=1),
 })
 
-@ns.route('/download/single-download')
+@api_ns.route('/download/single-download')
 class SingleDownloadEndpoint(Resource):
     @api.expect(download_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
@@ -217,7 +217,7 @@ class SingleDownloadEndpoint(Resource):
 # =========================================================================
 
 
-@ns.route('/download/playlist-download')
+@api_ns.route('/download/playlist-download')
 class PlaylistDownloadEndpoint(Resource):
     @api.expect(download_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)

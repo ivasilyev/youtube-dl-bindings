@@ -26,7 +26,9 @@ python3 rest.py
 # or bash run_web_server.sh
 ```
 
-## Run standalone single video downloader
+## Run single video downloader
+
+* Standalone
 
 ```shell script
 python3 single_downloader.py \
@@ -34,12 +36,40 @@ python3 single_downloader.py \
     --dir "/tmp"
 ```
 
-## Run standalone playlist video downloader
+* Web-based
+
+```shell script
+curl -X 'POST' \
+  'http://127.0.0.1:8090/api/download/single-download' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "url": "https://www.youtube.com/watch?v=zqTwOoElxBA",
+  "directory": "/tmp"
+}'
+```
+
+## Run playlist video downloader
+
+* Standalone
 
 ```shell script
 python3 playlist_downloader.py \
     --url "https://www.youtube.com/playlist?list=PLmBK9jc1368IfTwX0Vf3G_6GROJYc2XrH" \
     --dir "/tmp"
+``` 
+
+* Web-based
+
+```shell script
+curl -X 'POST' \
+  'http://127.0.0.1:8090/api/download/playlist-download' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "url": "https://www.youtube.com/playlist?list=PLmBK9jc1368IfTwX0Vf3G_6GROJYc2XrH",
+  "directory": "/tmp"
+}'
 ```
 
 ## Create system service
