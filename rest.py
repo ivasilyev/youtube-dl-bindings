@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from typing import List
 
+import pandas as pd
 from flask import Flask, request, render_template_string
 from flask_restx import Api, Resource, fields
 from pydantic import BaseModel
@@ -9,8 +10,6 @@ from pydantic import BaseModel
 from configs import ConfigurationManager
 from downloader import downloader
 from playlist_downloader import playlist_download
-from single_downloader import single_download
-from system_utils import ProgramExecutionDto
 from updater import update
 
 
@@ -24,10 +23,27 @@ _cfg: ConfigurationManager = ConfigurationManager()
 
 app = Flask(__name__)
 
+
+def get_table():
+    kwargs: List[dict] = downloader.get_queued_items()
+    html_table = pd.DataFrame(kwargs).to_html(index=False)
+    n = len(kwargs)
+    if n > 0:
+        s = f"""
+<br>
+<hr>
+<h3>Current table:</h3>
+{html_table}
+""".strip()
+        return s, n
+    return "", n
+
+
 @app.route('/')
 def index():
     """Serves the simple homepage webpage"""
-    html = """
+    html_table, number = get_table()
+    html = f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,9 +53,11 @@ def index():
 </head>
 <body>
     <h1>📺 Youtube-DL bindings web page</h1>
-    <h3>Welcome to the Youtube-DL bindings web page</h1>
+    <h3>Welcome to the Youtube-DL bindings web page</h3>
     <p>Click the link below to view the interactive API documentation.</p>
     <a href="/swagger">Go to Swagger UI</a>
+    <p>Current items number: {number}</p>
+    {html_table}
 </body>
 </html>
     """.strip()
