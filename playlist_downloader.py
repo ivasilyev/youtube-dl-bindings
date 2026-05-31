@@ -50,7 +50,7 @@ def playlist_download(playlist_url: str, directory: str):
     try:
         run_external_program(command=command)
         log.info(f"Saved video IDs to temporary file: '{file}'")
-        lines: List[str] = load_lines(file)
+        lines: List[str] = [i for i in load_lines(file) if i is not None and len(i) > 0]
         counter = 0
         for line in lines:
             video_id = line.strip()
