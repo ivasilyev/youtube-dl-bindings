@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import os
 
 from arch_based_data_provider import get_ffmpeg_args, \
@@ -59,17 +62,17 @@ def download_bun():
 
 
 def update():
-    # youtube-dl
+    log.info("Update youtube-dl")
     download_latest_github_release(**get_youtube_dl_kwargs())
-    # yt-dlp
+    log.info("Update yt-dlp")
     download_latest_github_release(**get_yt_dlp_kwargs())
-    # ffmpeg
+    log.info("Update ffmpeg")
     download_ffmpeg()
-    # deno
+    log.info("Update deno")
     download_deno()
-    # quickjs
+    log.info("Update quickjs")
     download_latest_github_release(**get_quickjs_kwargs())
-    # bun
+    log.info("Update bun")
     download_bun()
 
 

@@ -15,7 +15,7 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 
-python updater.py
+python3 updater.py
 ```
 
 ## Run web server
