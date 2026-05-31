@@ -23,9 +23,9 @@ def check_id_in_directory(video_id: str, directory: str):
     files: List[str] = find_files(directory)
     for file in files:
         if video_id in os.path.basename(file):
-            log.debug("Video ID '{video_id}' found in '{directory}'")
+            log.debug(f"Video ID '{video_id}' found in '{directory}'")
             return True
-    log.debug("Video ID '{video_id}' not found in '{directory}'")
+    log.debug(f"Video ID '{video_id}' not found in '{directory}'")
     return False
 
 
