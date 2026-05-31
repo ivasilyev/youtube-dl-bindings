@@ -29,10 +29,10 @@ def index():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>▶ Youtube-DL bindings</title>
+    <title>📺 Youtube-DL bindings</title>
 </head>
 <body>
-    <h1>▶ Youtube-DL bindings web page</h1>
+    <h1>📺 Youtube-DL bindings web page</h1>
     <h3>Welcome to the Youtube-DL bindings web page</h1>
     <p>Click the link below to view the interactive API documentation.</p>
     <a href="/swagger">Go to Swagger UI</a>
