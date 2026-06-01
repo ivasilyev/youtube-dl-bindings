@@ -31,7 +31,7 @@ def check_id_in_directory(video_id: str, directory: str):
 
 
 def playlist_download(playlist_url: str, directory: str, url_prefix: str):
-    log.info(f"Download playlist '{playlist_url}' with the URL prefix {url_prefix} into directory '{directory}'")
+    log.info(f"Download playlist '{playlist_url}' with the URL prefix '{url_prefix}' into directory '{directory}'")
     template = _cfg.get_playlist_download_template()
     temp_file: tempfile._TemporaryFileWrapper = tempfile.NamedTemporaryFile(
         mode='w+',

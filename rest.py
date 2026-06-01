@@ -230,14 +230,14 @@ class UpdateEndpoint(Resource):
 # =========================================================================
 
 
-download_model = api.model('DownloadRequest', {
-    'url': fields.String(required=True, description='URL', min_length=1),
+single_download_model = api.model('SingleDownloadRequest', {
+    'url': fields.String(required=True, description='Video URL', min_length=1),
     'directory': fields.String(required=True, description='Directory', min_length=1),
 })
 
 @api_ns.route('/download/single-download')
 class SingleDownloadEndpoint(Resource):
-    @api.expect(download_model, validate=True)
+    @api.expect(single_download_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
     @api.doc(description='Single download')
     def post(self):
@@ -252,16 +252,24 @@ class SingleDownloadEndpoint(Resource):
 # Endpoints for playlist_downloader
 # =========================================================================
 
+playlist_download_model = api.model('PlaylistDownloadRequest', {
+    'url': fields.String(required=True, description='Video playlist URL', min_length=1),
+    'directory': fields.String(required=True, description='Directory to download', min_length=1),
+    'prefix': fields.String(required=True, description='Video URL prefix prepending the ID', min_length=1,
+                            example="https://www.youtube.com/watch?v="),
+})
+
 
 @api_ns.route('/download/playlist-download')
 class PlaylistDownloadEndpoint(Resource):
-    @api.expect(download_model, validate=True)
+    @api.expect(playlist_download_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
     @api.doc(description='Playlist download')
     def post(self):
         url = request.json.get('url')
         directory = request.json.get('directory')
-        playlist_download(playlist_url=url, directory=directory)
+        prefix = request.json.get('prefix')
+        playlist_download(playlist_url=url, directory=directory, url_prefix=prefix)
         response_dto: RestResponseDto = RestResponseDto(data=dict())
         return response_dto.model_dump(), 200
 
