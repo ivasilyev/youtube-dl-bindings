@@ -24,6 +24,21 @@ _cfg: ConfigurationManager = ConfigurationManager()
 app = Flask(__name__)
 
 
+def get_current_download():
+    kwargs: dict = downloader.get_currently_downloading()
+    html_table = pd.DataFrame([kwargs, ]).to_html(index=False)
+    n = len(kwargs)
+    if n > 0:
+        s = f"""
+<br>
+<hr>
+<h3>Now downloading:</h3>
+{html_table}
+""".strip()
+        return s, n
+    return "", n
+
+
 def get_table():
     kwargs: List[dict] = downloader.get_queued_items()
     html_table = pd.DataFrame(kwargs).to_html(index=False)
@@ -32,7 +47,7 @@ def get_table():
         s = f"""
 <br>
 <hr>
-<h3>Current table:</h3>
+<h3>Current queue:</h3>
 {html_table}
 """.strip()
         return s, n
@@ -42,7 +57,7 @@ def get_table():
 @app.route('/')
 def index():
     """Serves the simple homepage webpage"""
-    html_table, number = get_table()
+    html_table, count = get_table()
     html = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +71,7 @@ def index():
     <h3>Welcome to the Youtube-DL bindings web page</h3>
     <p>Click the link below to view the interactive API documentation.</p>
     <a href="/swagger">Go to Swagger UI</a>
-    <p>Current items number: {number}</p>
+    <p>Current items count: {count}</p>
     {html_table}
 </body>
 </html>
@@ -253,6 +268,16 @@ class PlaylistDownloadEndpoint(Resource):
 # =========================================================================
 # Endpoints for downloader
 # =========================================================================
+
+
+@api_ns.route('/get-currently_downloading')
+class GetCurrentlyDownloadingEndpoint(Resource):
+    @api.marshal_with(rest_response_model, code=200)
+    @api.doc(description='View the currently downloading item')
+    def get(self):
+        items: dict = downloader.get_currently_downloading()
+        dto: RestResponseDto = RestResponseDto(data=items)
+        return dto.model_dump(), 200
 
 
 @api_ns.route('/view-queue')
