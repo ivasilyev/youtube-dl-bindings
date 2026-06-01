@@ -33,7 +33,9 @@ DEFAULT_SINGLE_DOWNLOAD_CMD_TEMPLATE = """
     --preset-alias=mkv \
     --merge-output-format=mkv \
     --remux-video=mkv \
-    --js-runtimes=deno:. \
+    --js-runtimes='deno:.' \
+    --js-runtimes='bun:.' \
+    --js-runtimes='quickjs:.' \
     --ffmpeg-location=. \
     --output={{ directory }}/'%(title)s__%(id)s.%(ext)s' \
     --verbose \
