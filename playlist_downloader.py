@@ -31,7 +31,7 @@ def check_id_in_directory(video_id: str, directory: str):
 
 
 def playlist_download(playlist_url: str, directory: str, url_prefix: str):
-    log.info(f"Download playlist '{playlist_url}' into directory '{directory}'")
+    log.info(f"Download playlist '{playlist_url}' with the URL prefix {url_prefix} into directory '{directory}'")
     template = _cfg.get_playlist_download_template()
     temp_file: tempfile._TemporaryFileWrapper = tempfile.NamedTemporaryFile(
         mode='w+',
@@ -70,22 +70,24 @@ def playlist_download(playlist_url: str, directory: str, url_prefix: str):
         log.info(f"Removed temporary file with video IDs: '{file}'")
 
 
-def parse_args() -> Tuple[str, str]:
+def parse_args() -> Tuple[str, str, str]:
     # 1. Create the parser object
     parser: ArgumentParser = ArgumentParser(description="Single video downloader.")
 
     # 2. Add the two required arguments
     parser.add_argument("-u", "--url", help="Video playlist URL")
     parser.add_argument("-d", "--dir", help="Directory to download")
+    parser.add_argument("-p", "--prefix", help="Video URL prefix prepending the ID",
+                        default="https://www.youtube.com/watch?v=")
 
     # 3. Parse the arguments from the CLI
     args = parser.parse_args()
-    return args.url, args.dir
+    return args.url, args.dir, args.prefix,
 
 
 def args_based_run():
-    url, directory = parse_args()
-    playlist_download(playlist_url=url, directory=directory)
+    url, directory, prefix = parse_args()
+    playlist_download(playlist_url=url, directory=directory, url_prefix=prefix)
 
 
 if __name__ == '__main__':

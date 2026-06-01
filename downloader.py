@@ -1,4 +1,3 @@
-import json
 import queue
 import threading
 from copy import deepcopy
@@ -44,7 +43,7 @@ class ThreadSafeDownloader:
     def push(self, url: str, directory: str, ):
         """Thread-safe method to add a new download item to the queue."""
         self._queue.put(dict(url=url, directory=directory))
-        print(f"[Queue] Added: {url}")
+        log.info(f"[Queue] Added: {url}")
 
     def get_queued_items(self) -> List[dict]:
         items: List[dict] = list(self._queue.queue)
@@ -55,11 +54,11 @@ class ThreadSafeDownloader:
     def download(self, url: str, directory: str, ):
         kwargs: dict = dict(url=url, directory=directory)
         """Blocking download."""
-        print(f"[Download] Starting: {url}")
+        log.info(f"[Download] Starting: {url}")
         self._downloading.clear()
         self._downloading.update(kwargs)
         single_download(**kwargs)
-        print(f"[Download] Finished: {url}")
+        log.info(f"[Download] Finished: {url}")
         self._downloading.clear()
 
     def get_currently_downloading(self) -> dict:
@@ -75,7 +74,7 @@ class ThreadSafeDownloader:
                 self._queue.task_done()
             except queue.Empty:
                 # Triggered every 5 seconds if the queue remains empty
-                print("[Worker] Checking queue... No new downloads found.")
+                log.info("[Worker] Checking queue... No new downloads found.")
 
     def stop(self):
         """Gracefully stops the worker loop."""
