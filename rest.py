@@ -24,22 +24,21 @@ _cfg: ConfigurationManager = ConfigurationManager()
 app = Flask(__name__)
 
 
-def get_current_download():
+def get_currently_downloading_table():
     kwargs: dict = downloader.get_currently_downloading()
-    html_table = pd.DataFrame([kwargs, ]).to_html(index=False)
-    n = len(kwargs)
-    if n > 0:
+    if len(kwargs.keys()) > 0:
+        html_table = pd.DataFrame([kwargs, ]).to_html(index=False)
         s = f"""
 <br>
 <hr>
 <h3>Now downloading:</h3>
 {html_table}
 """.strip()
-        return s, n
-    return "", n
+        return s
+    return ""
 
 
-def get_table():
+def get_queued_items_table():
     kwargs: List[dict] = downloader.get_queued_items()
     html_table = pd.DataFrame(kwargs).to_html(index=False)
     n = len(kwargs)
@@ -57,7 +56,8 @@ def get_table():
 @app.route('/')
 def index():
     """Serves the simple homepage webpage"""
-    html_table, count = get_table()
+    currently_downloading_table = get_currently_downloading_table()
+    queued_items_table, count = get_queued_items_table()
     html = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -71,8 +71,9 @@ def index():
     <h3>Welcome to the Youtube-DL bindings web page</h3>
     <p>Click the link below to view the interactive API documentation.</p>
     <a href="/swagger">Go to Swagger UI</a>
-    <p>Current items count: {count}</p>
-    {html_table}
+    <p>Current queued items count: {count}</p>
+    {currently_downloading_table}
+    {queued_items_table}
 </body>
 </html>
     """.strip()
