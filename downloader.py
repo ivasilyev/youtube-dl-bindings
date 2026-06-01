@@ -1,6 +1,7 @@
 import json
 import queue
 import threading
+from copy import deepcopy
 from typing import List
 
 from log import log
@@ -38,6 +39,7 @@ class ThreadSafeDownloader:
         self._worker_thread.start()
 
         self._initialized = True
+        self._downloading: dict = dict()
 
     def push(self, url: str, directory: str, ):
         """Thread-safe method to add a new download item to the queue."""
@@ -51,10 +53,17 @@ class ThreadSafeDownloader:
         return items
 
     def download(self, url: str, directory: str, ):
+        kwargs: dict = dict(url=url, directory=directory)
         """Simulates a blocking download process."""
         print(f"[Download] Starting: {url}")
-        single_download(url=url, directory=directory)
+        single_download(**kwargs)
+        self._downloading.clear()
+        self._downloading.update(kwargs)
         print(f"[Download] Finished: {url}")
+        self._downloading.clear()
+
+    def get_currently_downloading(self) -> dict:
+        return deepcopy(self._downloading)
 
     def _process_queue(self):
         """Internal loop checking for items every 5 seconds without busy-waiting."""
