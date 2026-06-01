@@ -54,11 +54,11 @@ class ThreadSafeDownloader:
 
     def download(self, url: str, directory: str, ):
         kwargs: dict = dict(url=url, directory=directory)
-        """Simulates a blocking download process."""
+        """Blocking download."""
         print(f"[Download] Starting: {url}")
-        single_download(**kwargs)
         self._downloading.clear()
         self._downloading.update(kwargs)
+        single_download(**kwargs)
         print(f"[Download] Finished: {url}")
         self._downloading.clear()
 
