@@ -74,6 +74,47 @@ curl -X 'POST' \
     }'
 ```
 
+### Advanced scripting example
+
+```shell script
+#!/usr/bin/env bash
+
+yt_dl() {
+    echo "Download: ${1} ${2}"
+    curl -X 'POST' \
+    'http://127.0.0.1:8090/api/download/playlist-download' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d @- <<EOF
+{
+    "url": "${1}",
+    "directory": "${2}",
+    "prefix": "https://www.youtube.com/watch?v="
+}
+EOF
+}
+
+bb_dl() {
+    echo "Download: ${1} ${2}"
+    curl -X 'POST' \
+    'http://127.0.0.1:8090/api/download/playlist-download' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d @- <<EOF
+{
+    "url": "${1}",
+    "directory": "${2}",
+    "prefix": "https://www.bilibili.com/video/"
+}
+EOF
+}
+
+echo Update Youtube channel
+yt_dl "https://www.youtube.com/@playlist/videos" '/tmp/yt-@playlist/'
+echo Update Bilibili channel
+bb_dl "https://space.bilibili.com/123456/upload/video" '/tmp/bb-123456/'
+```
+
 ## Create system service
 
 ```shell script
