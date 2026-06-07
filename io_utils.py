@@ -8,7 +8,7 @@ from log import log
 def load_string(file: str) -> str:
     with open(file, "r", encoding=ENCODING_UTF8) as file:
         s = file.read()
-    log.debug(f"Loaded: '{file}'")
+    log.info(f"Loaded: '{file}'")
     return s
 
 
@@ -21,4 +21,4 @@ def dump_string(string: str, file: str) -> None:
     with open(file, "w", encoding=ENCODING_UTF8) as f:
         f.write(string)
         f.close()
-    log.debug(f"Saved: '{file}'")
+    log.info(f"Saved: '{file}'")
