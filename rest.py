@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from configs import ConfigurationManager
 from downloader import downloader
+from m3u_creator import run_m3u_creator
 from playlist_downloader import playlist_download
 from updater import update
 
@@ -297,6 +298,37 @@ class ViewQueueEndpoint(Resource):
         items: List[dict] = downloader.get_queued_items()
         dto: RestResponseDto = RestResponseDto(data=items)
         return dto.model_dump(), 200
+
+
+# =========================================================================
+# Endpoints for m3u_creator
+# =========================================================================
+
+m3u_creation_model = api.model('M3uCreationRequest', {
+    'dir': fields.String(required=True, description="Input directory", min_length=1),
+    'm3u': fields.String(required=True, description="Output file", min_length=1),
+    'max_duration': fields.Integer(required=True, description="Maximal duration in seconds to filter", min_length=1,
+                                   example=300),
+    'extensions': fields.String(required=True, description="Comma-separated file extensions", min_length=1,
+                                example="mp4,mkv,webm"),
+})
+
+
+@api_ns.route('/m3u-create')
+class M3uCreationEndpoint(Resource):
+    @api.expect(m3u_creation_model, validate=True)
+    @api.marshal_with(rest_response_model, code=200)
+    @api.doc(description='M3U creation')
+    def post(self):
+        dir = request.json.get('dir')
+        m3u = request.json.get('m3u')
+        max_duration = request.json.get('max_duration')
+        extensions = request.json.get('extensions')
+        run_m3u_creator(input_directory=dir, output_file=m3u, max_duration_seconds=max_duration,
+                        extension_string=extensions)
+        response_dto: RestResponseDto = RestResponseDto(data=dict())
+        return response_dto.model_dump(), 200
+
 
 
 def run():

@@ -87,7 +87,7 @@ def parse_args() -> Tuple[str, str, int, str]:
     )
 
 
-def run(
+def run_m3u_creator(
         input_directory: str,
         output_file: str,
         max_duration_seconds: int,
@@ -105,4 +105,4 @@ def run(
 
 if __name__ == '__main__':
     kwargs: tuple = parse_args()
-    run(*kwargs)
+    run_m3u_creator(*kwargs)
