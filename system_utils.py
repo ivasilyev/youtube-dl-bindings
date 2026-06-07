@@ -2,7 +2,7 @@ import os
 import re
 import subprocess
 from collections import deque
-from typing import List
+from typing import List, Union
 
 from pydantic import BaseModel
 
@@ -14,8 +14,8 @@ class ProgramExecutionDto(BaseModel):
     """
     A simplified replacement for subprocess.CompletedProcess
     """
-    stdout: str
-    stderr: str
+    stdout: Union[str, None]
+    stderr: Union[str, None]
     success: bool
 
     def __str__(self):
@@ -60,17 +60,21 @@ def run_external_program(command: str, timeout: int = None) -> ProgramExecutionD
         result: subprocess.CompletedProcess = subprocess.run(
             command,
             capture_output=True,  # Captures both stdout and stderr
-            text=True,  # Automatically decodes bytes to string (UTF-8)
             check=False,  # Prevents throwing an error on non-zero exit codes
             timeout=timeout,  # Prevents the script from hanging indefinitely,
             shell=True,
             cwd=BINARY_DIR,
         )
-        dto: ProgramExecutionDto = ProgramExecutionDto(
-            stdout=result.stdout,
-            stderr=result.stderr,
-            success=result.returncode == 0,
-        )
+        try:
+            stdout = result.stdout.decode(ENCODING_UTF8)
+        except UnicodeDecodeError:
+            stdout = ""
+        try:
+            stderr = result.stderr.decode(ENCODING_UTF8)
+        except UnicodeDecodeError:
+            stderr = ""
+        success = result.returncode == 0
+        dto: ProgramExecutionDto = ProgramExecutionDto(stdout=stdout, stderr=stderr, success=success)
         log.debug(dto)
         return dto
 
