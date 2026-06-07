@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List
 
 from log import log
+from utils import remove_empty_values, safe_find_regex
 
 
 def extract_zip_recursively(zip_path: str, extract_to: str) -> None:
@@ -151,6 +152,12 @@ def find_files(directory: str) -> List[str]:
         for file in files:
             out.append(os.path.join(root, file))
     return sorted(out)
+
+
+def find_by_regex(regex: str, dir_name: str):
+    files: List[str] = find_files(dir_name)
+    matches: List[str] = remove_empty_values([safe_find_regex(regex, i) for i in files])
+    return matches
 
 
 def get_basename_without_all_extensions(file_path: str) -> str:
