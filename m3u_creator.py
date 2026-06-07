@@ -19,7 +19,7 @@ from utils import quote_string, safe_find_regex, remove_empty_values
 def run_ffprobe(file: str) -> str:
     log.info(f"Run ffprobe on '{file}'")
     ffprobe_bin = get_ffprobe_bin()
-    command = f"{quote_string(ffprobe_bin)} -i {quote_string(file)} -show_format -v quiet"
+    command = f"{ffprobe_bin} -i {quote_string(file)} -show_format -v quiet"
     dto: ProgramExecutionDto = run_external_program(command=command)
     return dto.stdout
 
