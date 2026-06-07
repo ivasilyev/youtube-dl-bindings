@@ -48,3 +48,15 @@ def get_yt_dlp_bin() -> str:
         return "yt-dlp.exe"
     else:
         return "yt-dlp"
+
+
+def _append_exe(s: str):
+    return f"{s}.exe"
+
+
+def get_ffprobe_bin() -> str:
+    f = "ffprobe"
+    if is_windows_os():
+        return _append_exe(f)
+    else:
+        return f
