@@ -8,6 +8,7 @@ import m3u8
 from pydantic import BaseModel
 
 from arch_based_data_provider import get_ffprobe_bin
+from constants import BINARY_DIR
 from file_system_utils import ends_with_extension, find_files
 from io_utils import dump_string
 from log import log
@@ -18,8 +19,8 @@ from utils import quote_string, safe_find_regex, remove_empty_values
 
 def run_ffprobe(file: str) -> str:
     log.info(f"Run ffprobe on '{file}'")
-    ffprobe_bin = get_ffprobe_bin()
-    command = f"{ffprobe_bin} -i {quote_string(file)} -show_format -v quiet"
+    ffprobe_bin = os.path.join(BINARY_DIR, get_ffprobe_bin())
+    command = f"{quote_string(ffprobe_bin)} -i {quote_string(file)} -show_format -v quiet"
     dto: ProgramExecutionDto = run_external_program(command=command)
     return dto.stdout
 
