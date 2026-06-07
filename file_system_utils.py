@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List
 
 from log import log
-from utils import remove_empty_values, safe_find_regex
+from utils import remove_empty_values, safe_find_regex, is_empty
 
 
 def extract_zip_recursively(zip_path: str, extract_to: str) -> None:
@@ -156,7 +156,7 @@ def find_files(directory: str) -> List[str]:
 
 def find_files_by_regex(directory: str, regex: str) -> List[str]:
     files: List[str] = find_files(directory)
-    matches: List[str] = remove_empty_values([safe_find_regex(regex, i) for i in files])
+    matches: List[str] = remove_empty_values([i for i in files if not is_empty(safe_find_regex(regex, i))])
     return matches
 
 
