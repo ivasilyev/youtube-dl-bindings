@@ -104,16 +104,5 @@ def run(
 
 
 if __name__ == '__main__':
-    (
-        input_directory,
-        output_file,
-        max_duration_seconds,
-        extensions,
-    ) = parse_args()
-    run(
-        input_directory=input_directory,
-        output_file=output_file,
-        max_duration_seconds=max_duration_seconds,
-        extension_string=extensions,
-    )
-
+    kwargs: tuple = parse_args()
+    run(*kwargs)
