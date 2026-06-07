@@ -1,18 +1,26 @@
 from system_utils import is_windows_os
 
 
-def get_youtube_dl_kwargs() -> dict:
+def _append_exe(s: str):
     if is_windows_os():
-        return dict(repository="ytdl-org/youtube-dl", file="youtube-dl.exe")
+        return f"{s}.exe"
     else:
-        return dict(repository="ytdl-org/youtube-dl", file="youtube-dl")
+        return s
+
+
+def get_youtube_dl_kwargs() -> dict:
+    return dict(repository="ytdl-org/youtube-dl", file=_append_exe("youtube-dl"))
+
+
+def get_yt_dlp_bin() -> str:
+    if is_windows_os():
+        return "yt-dlp.exe"
+    else:
+        return "yt-dlp"
 
 
 def get_yt_dlp_kwargs() -> dict:
-    if is_windows_os():
-        return dict(repository="yt-dlp/yt-dlp", file="yt-dlp.exe")
-    else:
-        return dict(repository="yt-dlp/yt-dlp", file="yt-dlp")
+    return dict(repository="yt-dlp/yt-dlp", file=get_yt_dlp_bin())
 
 
 def get_quickjs_kwargs() -> dict:
@@ -43,20 +51,5 @@ def get_bun_args() -> tuple:
         return ("oven-sh/bun", "bun-linux-x64-baseline-profile.zip")
 
 
-def get_yt_dlp_bin() -> str:
-    if is_windows_os():
-        return "yt-dlp.exe"
-    else:
-        return "yt-dlp"
-
-
-def _append_exe(s: str):
-    return f"{s}.exe"
-
-
 def get_ffprobe_bin() -> str:
-    f = "ffprobe"
-    if is_windows_os():
-        return _append_exe(f)
-    else:
-        return f
+    return _append_exe("ffprobe")
