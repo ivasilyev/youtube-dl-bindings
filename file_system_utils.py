@@ -174,6 +174,11 @@ def find_files_by_extension_list(directory: str, extensions: List[str]) -> List[
     return list(queue)
 
 
+def ends_with_extension(file: str, extension: str) -> bool:
+    ext = extension.strip(" .")
+    return file.endswith(ext)
+
+
 def get_basename_without_all_extensions(file_path: str) -> str:
     """
     Strips all extensions from a path (e.g., 'archive.tar.gz' -> 'archive').
