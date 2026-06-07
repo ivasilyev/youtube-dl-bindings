@@ -308,7 +308,7 @@ m3u_creation_model = api.model('M3uCreationRequest', {
     'dir': fields.String(required=True, description="Input directory", min_length=1),
     'm3u': fields.String(required=True, description="Output file", min_length=1),
     'max_duration': fields.Integer(required=True, description="Maximal duration in seconds to filter", min_length=1,
-                                   example=300),
+                                   example=0),
     'extensions': fields.String(required=True, description="Comma-separated file extensions", min_length=1,
                                 example="mp4,mkv,webm"),
 })
