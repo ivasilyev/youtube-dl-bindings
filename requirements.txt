@@ -2,6 +2,7 @@ flask
 flask-restx
 jinja2
 jsonpath-ng
+m3u8
 pandas
 pydantic
 pytest
