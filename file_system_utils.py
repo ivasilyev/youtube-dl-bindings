@@ -154,9 +154,15 @@ def find_files(directory: str) -> List[str]:
     return sorted(out)
 
 
-def find_by_regex(regex: str, dir_name: str):
-    files: List[str] = find_files(dir_name)
+def find_files_by_regex(directory: str, regex: str) -> List[str]:
+    files: List[str] = find_files(directory)
     matches: List[str] = remove_empty_values([safe_find_regex(regex, i) for i in files])
+    return matches
+
+
+def find_files_by_extension(directory: str, extension: str) -> List[str]:
+    regex = "\\." + extension.strip(" .")
+    matches: List[str] = find_files_by_regex(directory=directory, regex=regex)
     return matches
 
 
