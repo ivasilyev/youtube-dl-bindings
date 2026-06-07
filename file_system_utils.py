@@ -166,6 +166,14 @@ def find_files_by_extension(directory: str, extension: str) -> List[str]:
     return matches
 
 
+def find_files_by_extension_list(directory: str, extensions: List[str]) -> List[str]:
+    queue: deque[str] = deque()
+    for extension in extensions:
+        files: List[str] = find_files_by_extension(directory=directory, extension=extension)
+        queue.extend(files)
+    return list(queue)
+
+
 def get_basename_without_all_extensions(file_path: str) -> str:
     """
     Strips all extensions from a path (e.g., 'archive.tar.gz' -> 'archive').
