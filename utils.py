@@ -1,6 +1,7 @@
 import os
+import re
 import time
-from typing import Any, Dict, Optional, Sized
+from typing import Any, Dict, Optional
 
 import requests
 from jinja2 import Template
@@ -139,3 +140,9 @@ def is_empty(x: Any) -> bool:
 def remove_empty_values(x: list):
     return [i for i in x if not is_empty(i)]
 
+
+def safe_find_regex(regex: str, string, idx: int = 0) -> str:
+    try:
+        return re.findall(regex, string)[idx]
+    except IndexError:
+        return ""
