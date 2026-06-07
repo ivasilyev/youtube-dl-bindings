@@ -14,7 +14,7 @@ _cfg = ConfigurationManager()
 
 
 def single_download(url: str, directory: str) -> ProgramExecutionDto:
-    log.info(f"Download video URL '{url}' into directory '{directory}'")
+    log.debug(f"Download video URL '{url}' into directory '{directory}'")
     template = _cfg.get_single_download_template()
     bin = get_yt_dlp_bin()
     values_dict = dict(
