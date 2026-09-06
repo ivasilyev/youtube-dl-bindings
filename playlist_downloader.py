@@ -60,6 +60,17 @@ def playlist_download(playlist_url: str, directory: str, url_prefix: str):
             matches = [i for i in basenames if video_id in i]
             if len(matches) > 0:
                 log.info(f"Skip ID '{video_id}'")
+                if len(matches) > 1:
+                    log.info(f"Remove failed file for '{video_id}'")
+                    full_matches = [os.path.join(directory, match) for match in matches]
+                    sorted_full_matches = sorted(
+                        [i for i in full_matches],
+                        key=lambda x: x.stat().st_mtime,
+                        reverse=False,
+                    )
+                    failed_download = sorted_full_matches[-1]
+                    log.info(f"Remove failed file: '{failed_download}'")
+                    os.remove(failed_download)
                 continue
             video_url = f"{url_prefix}{video_id}"
             downloader.push(url=video_url, directory=directory)
