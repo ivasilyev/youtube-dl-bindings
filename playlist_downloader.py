@@ -4,6 +4,8 @@
 import os
 import tempfile
 from argparse import ArgumentParser
+from collections import deque
+from pathlib import Path
 from typing import List, Tuple
 
 from arch_based_data_provider import get_yt_dlp_bin
@@ -42,9 +44,9 @@ def playlist_download(playlist_url: str, directory: str, url_prefix: str) -> dic
     file = temp_file.name
     # Close it right away to handle the "open" command later
     temp_file.close()
-    bin = get_yt_dlp_bin()
+    _bin = get_yt_dlp_bin()
     values_dict = dict(
-        bin=quote_string(bin),
+        bin=quote_string(_bin),
         url=quote_string(playlist_url),
         file=quote_string(file),
     )
@@ -54,32 +56,43 @@ def playlist_download(playlist_url: str, directory: str, url_prefix: str) -> dic
         log.info(f"Saved video IDs to temporary file: '{file}'")
         raw_lines: List[str] = load_lines(file)
         lines: List[str] = remove_empty_values(raw_lines)
-        counter = 0
-        basenames: List[str] = os.listdir(directory)
+        queue: deque[str] = deque()
+        base_names: List[str] = os.listdir(directory)
         for line in lines:
             video_id = line.strip()
-            matches: List[str] = [i for i in basenames if video_id in i]
+            matches: List[str] = [i for i in base_names if video_id in i]
             if len(matches) > 0:
                 log.info(f"Skip ID '{video_id}'")
                 if len(matches) > 1:
                     log.info(f"Remove failed file for '{video_id}'")
-                    full_matches: List[str] = [os.path.join(directory, match) for match in matches]
-                    sorted_full_matches: List[str] = sorted(
+                    full_matches: List[Path] = [
+                        Path(os.path.join(directory, match))
+                        for match in matches
+                    ]
+                    sorted_full_matches: List[Path] = sorted(
                         [i for i in full_matches],
                         key=lambda x: x.stat().st_mtime,
                         reverse=False,
                     )
                     failed_download = sorted_full_matches[-1]
                     log.info(f"Remove failed file: '{failed_download}'")
-                    os.remove(failed_download)
+                    failed_download.unlink()
                 continue
             video_url = f"{url_prefix}{video_id}"
             downloader.push(url=video_url, directory=directory)
-            counter += 1
+            queue.append(video_url)
+        counter = len(queue)
         log.info(f"Processed {counter} IDs")
     finally:
         os.remove(file)
         log.info(f"Removed temporary file with video IDs: '{file}'")
+    data.update(dict(
+        playlist_url=playlist_url,
+        directory=directory,
+        url_prefix=url_prefix,
+        processed_ids_number=counter,
+        processed_urls=list(queue),
+    ))
     return data
 
 
