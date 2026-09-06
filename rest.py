@@ -5,20 +5,14 @@ from typing import List
 import pandas as pd
 from flask import Flask, request, render_template_string
 from flask_restx import Api, Resource, fields
-from pydantic import BaseModel
 
 from configs import ConfigurationManager
+from decorators import rest_exception_handling_decorator
 from downloader import downloader
 from m3u_creator import run_m3u_creator
+from models import RestResponseDto
 from playlist_downloader import playlist_download
 from updater import update
-
-
-class RestResponseDto(BaseModel):
-    data: dict
-    success: bool = True
-    message: str = "OK"
-
 
 _cfg: ConfigurationManager = ConfigurationManager()
 
@@ -266,13 +260,13 @@ class PlaylistDownloadEndpoint(Resource):
     @api.expect(playlist_download_model, validate=True)
     @api.marshal_with(rest_response_model, code=200)
     @api.doc(description='Playlist download')
+    @rest_exception_handling_decorator
     def post(self):
         url = request.json.get('url')
         directory = request.json.get('directory')
         prefix = request.json.get('prefix')
-        playlist_download(playlist_url=url, directory=directory, url_prefix=prefix)
-        response_dto: RestResponseDto = RestResponseDto(data=dict())
-        return response_dto.model_dump(), 200
+        data: dict = playlist_download(playlist_url=url, directory=directory, url_prefix=prefix)
+        return data
 
 
 # =========================================================================
@@ -328,7 +322,6 @@ class M3uCreationEndpoint(Resource):
                         extension_string=extensions)
         response_dto: RestResponseDto = RestResponseDto(data=dict())
         return response_dto.model_dump(), 200
-
 
 
 def run():

@@ -30,7 +30,8 @@ def check_id_in_directory(video_id: str, directory: str):
     return False
 
 
-def playlist_download(playlist_url: str, directory: str, url_prefix: str):
+def playlist_download(playlist_url: str, directory: str, url_prefix: str) -> dict:
+    data: dict = dict()
     log.info(f"Download playlist '{playlist_url}' with the URL prefix '{url_prefix}' into directory '{directory}'")
     template = _cfg.get_playlist_download_template()
     temp_file: tempfile._TemporaryFileWrapper = tempfile.NamedTemporaryFile(
@@ -57,13 +58,13 @@ def playlist_download(playlist_url: str, directory: str, url_prefix: str):
         basenames: List[str] = os.listdir(directory)
         for line in lines:
             video_id = line.strip()
-            matches = [i for i in basenames if video_id in i]
+            matches: List[str] = [i for i in basenames if video_id in i]
             if len(matches) > 0:
                 log.info(f"Skip ID '{video_id}'")
                 if len(matches) > 1:
                     log.info(f"Remove failed file for '{video_id}'")
-                    full_matches = [os.path.join(directory, match) for match in matches]
-                    sorted_full_matches = sorted(
+                    full_matches: List[str] = [os.path.join(directory, match) for match in matches]
+                    sorted_full_matches: List[str] = sorted(
                         [i for i in full_matches],
                         key=lambda x: x.stat().st_mtime,
                         reverse=False,
@@ -79,6 +80,7 @@ def playlist_download(playlist_url: str, directory: str, url_prefix: str):
     finally:
         os.remove(file)
         log.info(f"Removed temporary file with video IDs: '{file}'")
+    return data
 
 
 def parse_args() -> Tuple[str, str, str]:
