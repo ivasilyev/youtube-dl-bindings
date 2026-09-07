@@ -64,19 +64,11 @@ def playlist_download(playlist_url: str, directory: str, url_prefix: str) -> dic
             if len(matches) > 0:
                 log.info(f"Skip ID '{video_id}'")
                 if len(matches) > 1:
-                    log.info(f"Remove failed file for '{video_id}'")
-                    full_matches: List[Path] = [
-                        Path(os.path.join(directory, match))
-                        for match in matches
-                    ]
-                    sorted_full_matches: List[Path] = sorted(
-                        [i for i in full_matches],
-                        key=lambda x: x.stat().st_mtime,
-                        reverse=False,
-                    )
-                    failed_download = sorted_full_matches[-1]
-                    log.info(f"Remove failed file: '{failed_download}'")
-                    failed_download.unlink()
+                    for match in matches:
+                        if match.endswith(".part"):
+                            full_match = os.path.join(directory, match)
+                            log.info(f"Remove failed file: '{full_match}'")
+                            os.remove(full_match)
                 continue
             video_url = f"{url_prefix}{video_id}"
             downloader.push(url=video_url, directory=directory)
