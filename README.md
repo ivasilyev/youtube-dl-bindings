@@ -119,21 +119,24 @@ bb_dl "https://space.bilibili.com/123456/upload/video" '/tmp/bb-123456/'
 
 ```shell script
 export TOOL_NAME=youtube-dl-bindings
-export TOOL_SERVICE="/etc/systemd/system/${TOOL_NAME}.service"
+export TOOL_SERVICE_NAME="${TOOL_NAME}.service"
+export TOOL_SERVICE_FILE="/etc/systemd/system/${TOOL_SERVICE_NAME}"
 
 echo Create ${TOOL_NAME} system service
-cat <<EOF | sudo tee "${TOOL_SERVICE}"
+cat <<EOF | sudo tee "${TOOL_SERVICE_FILE}"
 [Unit]
-Description=${TOOL_NAME}
-Documentation=https://google.com
+Description=${TOOL_NAME} service
+Documentation=https://github.com/ivasilyev/youtube-dl-bindings
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 Type=simple
-User=$(whoami)
+User="$(whoami)"
+WorkingDirectory="$(pwd)"
+Environment=PYTHONUNBUFFERED=1
 ExecReload=/usr/bin/env kill -s SIGTERM \$MAINPID
-ExecStart=/usr/bin/env bash /opt/${TOOL_NAME}/run_web_server.sh
+ExecStart=/usr/bin/env bash "$(pwd)/run_web_server.sh"
 SyslogIdentifier=${TOOL_NAME}
 Restart=always
 RestartSec=5
@@ -145,8 +148,9 @@ EOF
 
 echo Activate ${TOOL_NAME} service
 sudo systemctl daemon-reload
-sudo systemctl enable "${TOOL_NAME}.service"
-sudo systemctl restart "${TOOL_NAME}.service"
+sudo systemctl enable "${TOOL_SERVICE_NAME}"
+sudo systemctl restart "${TOOL_SERVICE_NAME}"
 sleep 3
-sudo systemctl status "${TOOL_NAME}.service"
+sudo systemctl status "${TOOL_SERVICE_NAME}"
+sudo journalctl -u "${TOOL_SERVICE_NAME}"
 ```
