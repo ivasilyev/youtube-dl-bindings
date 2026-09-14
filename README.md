@@ -132,11 +132,11 @@ After=network-online.target
 
 [Service]
 Type=simple
-User="$(whoami)"
-WorkingDirectory="$(pwd)"
+User=$(whoami)
+WorkingDirectory=$(pwd)
 Environment=PYTHONUNBUFFERED=1
 ExecReload=/usr/bin/env kill -s SIGTERM \$MAINPID
-ExecStart=/usr/bin/env bash "$(pwd)/run_web_server.sh"
+ExecStart=/usr/bin/env bash $(pwd)/run_web_server.sh
 SyslogIdentifier=${TOOL_NAME}
 Restart=always
 RestartSec=5
